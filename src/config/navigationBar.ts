@@ -43,7 +43,7 @@ export const navigationBarData: NavData = {
 			name: 'Kontaktiere uns',
 			link: 'https://calendly.com/postpal-felix/postpal-kennenlernen',
 			style: 'primary',
-			size: 'lg'
+			size: 'base'
 		}
 	]
 }

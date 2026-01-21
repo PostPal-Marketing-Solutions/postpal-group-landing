@@ -10,42 +10,74 @@ import Row from '../../ui/Row.astro'
 import Col from '../../ui/Col.astro'
 // - UI
 import ChipNotification from '../../ui/ChipNotification.astro'
-import { Image } from 'astro:assets'
 import Button from '../../ui/Button.astro'
-import AvatarGroup from '../../ui/AvatarGroup.astro'
 
 // Content
-// - Hero Image
-import heroImage from '../../../assets/hero-01.png'
-// - Avatars
-import user1 from '../../../assets/avatars/avatar-01.webp'
-import user2 from '../../../assets/avatars/avatar-02.webp'
-import user3 from '../../../assets/avatars/avatar-03.webp'
-const avatars = [
-	{ image: { src: user1.src, alt: 'user name' }, link: '/' },
-	{ image: { src: user2.src, alt: 'user name' }, link: '/' },
-	{ image: { src: user3.src, alt: 'user name' }, link: '/' }
-]
+const heroImageSrc = '/postpal-app-report.png'
 ---
 
-<Section id="intro" padding="top" classes="bg-neutral-50 dark:bg-neutral-900 min-h-[60vh] flex items-center">
-	<Row>
-		<Col span="2" />
-		<Col span="8" align="center">
-			<ChipNotification radius="rounded-full" classes="mb-6">
-				<strong>Expertise</strong> in Owned Media Print Marketing
+<Section id="intro" padding="both" classes="hero">
+	<Row classes="items-center">
+		<Col span="12" align="center" classes="text-center">
+			<ChipNotification
+				radius="rounded-full"
+				classes="hero__pill animate-fadeUp [animation-delay:50ms]"
+			>
+				PostPal Group
 			</ChipNotification>
-			<h1>PostPal Group – Champions in <span class="font-accent text-primary-500 text-6xl lowercase">Owned Media</span> Print Marketing</h1>
-
-			<p class="pb-8 text-xl max-w-2xl mx-auto text-neutral-600 dark:text-neutral-300">
-				Wir vereinen technologische Innovation mit jahrzehntelanger Expertise im Direct Marketing. 
-				Als Holding der PostPal App und strategischer Partner helfen wir Marken, physische Touchpoints profitabel zu skalieren.
+			<h1 class="hero__title animate-fadeUp [animation-delay:150ms]">
+				Experten für <span class="text-primary-600 dark:text-primary-200">Direct Mail</span>
+				<span class="block"
+					>&amp; <span class="text-accent-500 dark:text-accent-300">Print Marketing</span></span
+				>
+			</h1>
+			<p class="hero__subtitle animate-fadeUp [animation-delay:250ms]">
+				Strategie, Print und Versand aus einer Hand - damit Direct-Mail-Kampagnen messbar wirken.
 			</p>
-			<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-				<Button size="lg" link="https://www.getpostpal.com/">PostPal App entdecken</Button>
-				<Button size="lg" style="secondary" link="https://calendly.com/postpal-felix/postpal-kennenlernen">Strategie-Gespräch buchen</Button>
+			<div class="hero__actions animate-fadeUp [animation-delay:350ms]">
+				<Button size="base" link="https://www.getpostpal.com/">PostPal App entdecken</Button>
+				<Button
+					size="base"
+					style="secondary"
+					link="https://calendly.com/postpal-felix/postpal-kennenlernen"
+				>
+					Strategie-Gespräch buchen
+				</Button>
 			</div>
 		</Col>
-		<Col span="2" />
+		<Col span="12" align="center" classes="mt-10">
+			<div class="hero__media animate-fadeUp [animation-delay:450ms]">
+				<img src={heroImageSrc} alt="PostPal App Report" class="hero__image" loading="lazy" />
+			</div>
+		</Col>
 	</Row>
 </Section>
+
+<style>
+	.hero {
+		--hero-bg: radial-gradient(120% 120% at 50% -10%, #fff4e9 0%, #ffffff 45%, #e6f1ef 100%);
+		@apply flex min-h-[70vh] items-center;
+		background: var(--hero-bg);
+	}
+	:global(.dark) .hero {
+		--hero-bg: radial-gradient(120% 120% at 50% -10%, #0b3f35 0%, #00201b 55%, #0d1011 100%);
+	}
+	.hero__pill {
+		@apply mb-12 border border-neutral-200/80 bg-white/70 text-neutral-700 backdrop-blur dark:border-white/10 dark:bg-white/10 dark:text-white/90;
+	}
+	.hero__title {
+		@apply pt-4 text-4xl font-bold leading-tight tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl dark:text-white;
+	}
+	.hero__subtitle {
+		@apply mx-auto mt-4 max-w-2xl text-lg text-neutral-600 dark:text-neutral-200;
+	}
+	.hero__actions {
+		@apply mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row;
+	}
+	.hero__media {
+		@apply mx-auto w-full max-w-5xl overflow-hidden rounded-3xl border border-neutral-200/70 bg-white/70 p-2 shadow-2xl shadow-neutral-900/10 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:shadow-black/40;
+	}
+	.hero__image {
+		@apply h-full w-full rounded-2xl object-cover;
+	}
+</style>
