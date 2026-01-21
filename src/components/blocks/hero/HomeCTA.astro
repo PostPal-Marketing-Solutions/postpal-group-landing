@@ -11,9 +11,10 @@ import Col from '../../ui/Col.astro'
 // - UI
 import ChipNotification from '../../ui/ChipNotification.astro'
 import Button from '../../ui/Button.astro'
+import { Image } from 'astro:assets'
 
 // Content
-const heroImageSrc = '/postpal-app.png'
+import heroImage from '../../../assets/postpal-app.png'
 ---
 
 <Section id="intro" padding="both" classes="hero">
@@ -28,7 +29,7 @@ const heroImageSrc = '/postpal-app.png'
 			<h1 class="hero__title animate-fadeUp [animation-delay:150ms]">
 				Experten für <span class="text-primary-600 dark:text-primary-200">Direct Mail</span>
 				<span class="block"
-					>&amp; <span class="text-accent-500 dark:text-accent-300">Print Marketing</span></span
+					>&amp; <span class="text-accent-800 dark:text-accent-300">Print Marketing</span></span
 				>
 			</h1>
 			<p class="hero__subtitle animate-fadeUp [animation-delay:250ms]">
@@ -45,7 +46,17 @@ const heroImageSrc = '/postpal-app.png'
 		</Col>
 		<Col span="12" align="center" classes="mt-10">
 			<div class="hero__media animate-fadeUp [animation-delay:450ms]">
-				<img src={heroImageSrc} alt="PostPal App" class="hero__image" loading="lazy" />
+				<Image
+					src={heroImage}
+					alt="PostPal App"
+					width={1400}
+					height={874}
+					sizes="(min-width: 1024px) 960px, 90vw"
+					class="hero__image"
+					loading="eager"
+					decoding="async"
+					fetchpriority="high"
+				/>
 			</div>
 		</Col>
 	</Row>
@@ -76,6 +87,6 @@ const heroImageSrc = '/postpal-app.png'
 		@apply mx-auto w-full max-w-5xl overflow-hidden rounded-3xl border border-neutral-200/70 bg-white/70 p-2 shadow-2xl shadow-neutral-900/10 backdrop-blur dark:border-white/10 dark:bg-white/5 dark:shadow-black/40;
 	}
 	.hero__image {
-		@apply h-full w-full rounded-2xl object-cover;
+		@apply h-auto w-full rounded-2xl object-contain;
 	}
 </style>

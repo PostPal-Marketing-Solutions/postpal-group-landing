@@ -15,6 +15,8 @@ import { footerNavigationData } from '../../config/footerNavigation'
 const { footerAbout, footerColumns, subFooter } = footerNavigationData
 const lightLogoSrc = 'https://app.getpostpal.com/storage/logo-transparent-dark.png'
 const darkLogoSrc = 'https://app.getpostpal.com/storage/logo-transparent-light.png'
+const footerLogoWidth = 250
+const footerLogoHeight = 56
 ---
 
 <footer class="footer">
@@ -24,12 +26,23 @@ const darkLogoSrc = 'https://app.getpostpal.com/storage/logo-transparent-light.p
 			<div class="footer__cols">
 				<div class="footer__col">
 					<a aria-label="webiste logo" aria-current="page" class="footer__main-brand" href="/">
-						<img src={lightLogoSrc} alt={footerAbout.logo.alt} width="120" class="dark:hidden" />
+						<img
+							src={lightLogoSrc}
+							alt={footerAbout.logo.alt}
+							width={footerLogoWidth}
+							height={footerLogoHeight}
+							class="footer__logo-img dark:hidden"
+							loading="lazy"
+							decoding="async"
+						/>
 						<img
 							src={darkLogoSrc}
 							alt={footerAbout.logo.alt}
-							width="120"
-							class="hidden dark:block"
+							width={footerLogoWidth}
+							height={footerLogoHeight}
+							class="footer__logo-img hidden dark:block"
+							loading="lazy"
+							decoding="async"
 						/>
 					</a>
 					<p>
@@ -92,6 +105,9 @@ const darkLogoSrc = 'https://app.getpostpal.com/storage/logo-transparent-light.p
 	}
 	.footer__main-brand {
 		@apply mb-6 flex items-center gap-2 whitespace-nowrap font-headings text-xl font-bold leading-6 text-neutral-700 focus:outline-none dark:text-neutral-50;
+	}
+	.footer__logo-img {
+		@apply h-10 w-auto;
 	}
 	.footer__container {
 		@apply container mx-auto px-6;

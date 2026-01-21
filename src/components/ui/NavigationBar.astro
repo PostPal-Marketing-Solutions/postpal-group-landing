@@ -13,21 +13,16 @@
 
 // Components
 // - UI
-import { Icon } from 'astro-icon/components'
 import Button from './Button.astro'
 import Switcher from './ModeSwitcher.astro'
 
 // Data
 import { navigationBarData } from '../../config/navigationBar'
-const { logo, navItems, navActions } = navigationBarData
+const { logo, navActions } = navigationBarData
 const lightLogoSrc = 'https://app.getpostpal.com/storage/logo-transparent-dark.png'
 const darkLogoSrc = 'https://app.getpostpal.com/storage/logo-transparent-light.png'
-
-// Determine current path
-const path = new URL(Astro.request.url).pathname
-function isActivePath(currentPath: string): boolean {
-	return path === currentPath || path === `${currentPath}/`
-}
+const logoWidth = 250
+const logoHeight = 56
 
 // Type assertion for navActions to ensure type safety
 const savedNavActions = navActions.map((action) => ({
@@ -42,8 +37,22 @@ const savedNavActions = navActions.map((action) => ({
 		<nav aria-label="main navigation" role="navigation" class="header__nav">
 			<!-- Logo -->
 			<a href="/" class="header__logo">
-				<img src={lightLogoSrc} alt={logo.alt} width="180" class="dark:hidden" />
-				<img src={darkLogoSrc} alt={logo.alt} width="180" class="hidden dark:block" />
+				<img
+					src={lightLogoSrc}
+					alt={logo.alt}
+					width={logoWidth}
+					height={logoHeight}
+					class="header__logo-img dark:hidden"
+					decoding="async"
+				/>
+				<img
+					src={darkLogoSrc}
+					alt={logo.alt}
+					width={logoWidth}
+					height={logoHeight}
+					class="header__logo-img hidden dark:block"
+					decoding="async"
+				/>
 			</a>
 
 			<!-- Theme Switcher -->
@@ -65,7 +74,7 @@ const savedNavActions = navActions.map((action) => ({
 
 <style>
 	.header {
-		@apply sticky top-0 z-20 w-full animate-fadeInShadowLight [animation-range:0%_20rem] [animation-timeline:scroll()] before:absolute after:absolute after:left-0 after:top-full after:z-10 after:block after:h-px after:w-full lg:after:hidden dark:animate-fadeInShadowDark dark:[animation-range:0%_20rem] dark:[animation-timeline:scroll()];
+		@apply sticky top-0 z-20 w-full shadow-sm shadow-neutral-900/5 before:absolute after:absolute after:left-0 after:top-full after:z-10 after:block after:h-px after:w-full lg:after:hidden dark:shadow-neutral-950/40;
 	}
 	.header:before {
 		@apply block h-full w-full bg-white/95 lg:backdrop-blur-sm dark:bg-neutral-900/95;
@@ -75,6 +84,9 @@ const savedNavActions = navActions.map((action) => ({
 	}
 	.header__logo {
 		@apply flex flex-auto items-center gap-2 whitespace-nowrap py-3 font-headings text-2xl font-black tracking-wider focus:outline-none;
+	}
+	.header__logo-img {
+		@apply h-10 w-auto;
 	}
 	.header__nav {
 		@apply flex h-[5.5rem] items-stretch gap-6 font-medium text-neutral-700 lg:justify-between dark:text-neutral-50;
