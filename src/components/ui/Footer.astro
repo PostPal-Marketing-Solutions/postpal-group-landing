@@ -6,15 +6,16 @@
 
 // Components
 // - UI
+import { Image } from 'astro:assets'
 import { Icon } from 'astro-icon/components'
 
 // Data
 import { socialLinks } from '../../config/socialLinks'
 import { footerNavigationData } from '../../config/footerNavigation'
+import lightLogo from '../../assets/logos/logo-transparent-dark.png'
+import darkLogo from '../../assets/logos/logo-transparent-light.png'
 
 const { footerAbout, footerColumns, subFooter } = footerNavigationData
-const lightLogoSrc = 'https://app.getpostpal.com/storage/logo-transparent-dark.png'
-const darkLogoSrc = 'https://app.getpostpal.com/storage/logo-transparent-light.png'
 const footerLogoWidth = 250
 const footerLogoHeight = 56
 ---
@@ -26,8 +27,8 @@ const footerLogoHeight = 56
 			<div class="footer__cols">
 				<div class="footer__col">
 					<a aria-label="webiste logo" aria-current="page" class="footer__main-brand" href="/">
-						<img
-							src={lightLogoSrc}
+						<Image
+							src={lightLogo}
 							alt={footerAbout.logo.alt}
 							width={footerLogoWidth}
 							height={footerLogoHeight}
@@ -35,8 +36,8 @@ const footerLogoHeight = 56
 							loading="lazy"
 							decoding="async"
 						/>
-						<img
-							src={darkLogoSrc}
+						<Image
+							src={darkLogo}
 							alt={footerAbout.logo.alt}
 							width={footerLogoWidth}
 							height={footerLogoHeight}
@@ -107,7 +108,7 @@ const footerLogoHeight = 56
 		@apply mb-6 flex items-center gap-2 whitespace-nowrap font-headings text-xl font-bold leading-6 text-neutral-700 focus:outline-none dark:text-neutral-50;
 	}
 	.footer__logo-img {
-		@apply h-10 w-auto;
+		@apply h-auto w-auto max-h-10 max-w-[250px];
 	}
 	.footer__container {
 		@apply container mx-auto px-6;
