@@ -1,0 +1,67 @@
+[
+	{
+		"header": {
+			"title": "FREE",
+			"subtitle": "Self-Service starting today.",
+			"currency": "€",
+			"price": "0",
+			"priceLabel": "month, no hidden fees",
+			"priceMontly": "0",
+			"priceLabelMontly": "month",
+			"buttonName": "Kostenlos starten",
+			"buttonLink": "/"
+		},
+		"body": {
+			"listItems": [
+				{
+					"listItem": "Zugang zur Web-App"
+				},
+				{
+					"listItem": "Eigene Designs hochladen"
+				},
+				{
+					"listItem": "Automatisierungen einrichten"
+				}
+			]
+		},
+		"footer": {
+			"buttonName": "Alle Features",
+			"buttonLink": "/"
+		},
+		"type": "basic"
+	},
+	{
+		"header": {
+			"title": "PRO",
+			"subtitle": "Vollständiger Full-Service Support.",
+			"currency": "€",
+			"price": "499",
+			"priceLabel": "pro Monat",
+			"priceMontly": "499",
+			"priceLabelMontly": "pro Monat",
+			"buttonName": "Termin vereinbaren",
+			"buttonLink": "/"
+		},
+		"body": {
+			"listItems": [
+				{
+					"listItem": "Manuelle Qualitätschecks"
+				},
+				{
+					"listItem": "Adressvalidierung"
+				},
+				{
+					"listItem": "Strategie-Beratung durch Experten"
+				},
+				{
+					"listItem": "Exklusiver Account Manager"
+				}
+			]
+		},
+		"footer": {
+			"buttonName": "Persönliches Gespräch",
+			"buttonLink": "/"
+		},
+		"type": "featured"
+	}
+]

@@ -1,0 +1,26 @@
+[
+	{
+		"question": "Welche Shopsysteme werden unterstützt?",
+		"reply": "PostPal ist für Shopify optimiert, unterstützt aber jedes System über CSV-Uploads.",
+		"category": "Integrationen",
+		"open": true
+	},
+	{
+		"question": "Wie wird die Performance gemessen?",
+		"reply": "Wir bieten automatisches 60-Tage-Konversions-Tracking für Shopify-Kunden, inklusive Gutscheincode-Tracking.",
+		"category": "Analytics",
+		"open": false
+	},
+	{
+		"question": "Gibt es eine Mindestbestellmenge?",
+		"reply": "Kampagnen benötigen mindestens 500 Postkarten, um die günstigen 'Dialogpost Easy' Versandtarife nutzen zu können.",
+		"category": "Preise",
+		"open": false
+	},
+	{
+		"question": "Ist der Druck nachhaltig?",
+		"reply": "Ja, wir drucken auf holzfreiem Papier, für das keine Bäume extra gefällt werden.",
+		"category": "Service",
+		"open": false
+	}
+]

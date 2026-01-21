@@ -1,0 +1,38 @@
+[
+	{
+		"title": "Native Integrations",
+		"icon": "rocket",
+		"description": "Easy integration with Shopify, Klaviyo, and CSV imports for seamless segmenting, automation, and tracking.",
+		"category": "Integration"
+	},
+	{
+		"title": "Campaign Autopilot",
+		"icon": "rectangle-stack",
+		"description": "'Set it and forget it' campaigns that trigger automatically based on customer behavior.",
+		"category": "Automation"
+	},
+	{
+		"title": "Real-time ROI Dashboard",
+		"icon": "chart-pie",
+		"description": "Tracks the performance of every individual postcard, including conversion tracking per customer and coupon code.",
+		"category": "Analytics"
+	},
+	{
+		"title": "Handwritten Cards",
+		"icon": "paint-brush",
+		"description": "Unique cards written with real ink and pens to create a 'wow-effect' for your customers.",
+		"category": "Innovation"
+	},
+	{
+		"title": "Predictable Pricing",
+		"icon": "credit-card",
+		"description": "Fixed costs for printing and postage that don't fluctuate with market competition.",
+		"category": "Pricing"
+	},
+	{
+		"title": "Full-Service Support",
+		"icon": "user-group",
+		"description": "Strategy development, design service, and campaign implementation help from eCommerce experts.",
+		"category": "Support"
+	}
+]

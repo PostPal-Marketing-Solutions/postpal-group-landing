@@ -1,0 +1,51 @@
+---
+// Home page CTA Section
+// ------------
+// Description: A centered call to action section that contains: a title, text, a user review snippet, a button and a image.
+
+// Components
+// - Layout
+import Section from '../../ui/Section.astro'
+import Row from '../../ui/Row.astro'
+import Col from '../../ui/Col.astro'
+// - UI
+import ChipNotification from '../../ui/ChipNotification.astro'
+import { Image } from 'astro:assets'
+import Button from '../../ui/Button.astro'
+import AvatarGroup from '../../ui/AvatarGroup.astro'
+
+// Content
+// - Hero Image
+import heroImage from '../../../assets/hero-01.png'
+// - Avatars
+import user1 from '../../../assets/avatars/avatar-01.webp'
+import user2 from '../../../assets/avatars/avatar-02.webp'
+import user3 from '../../../assets/avatars/avatar-03.webp'
+const avatars = [
+	{ image: { src: user1.src, alt: 'user name' }, link: '/' },
+	{ image: { src: user2.src, alt: 'user name' }, link: '/' },
+	{ image: { src: user3.src, alt: 'user name' }, link: '/' }
+]
+---
+
+<Section id="intro" padding="top" classes="bg-neutral-50 dark:bg-neutral-900 min-h-[60vh] flex items-center">
+	<Row>
+		<Col span="2" />
+		<Col span="8" align="center">
+			<ChipNotification radius="rounded-full" classes="mb-6">
+				<strong>Expertise</strong> in Owned Media Print Marketing
+			</ChipNotification>
+			<h1>PostPal Group – Champions in <span class="font-accent text-primary-500 text-6xl lowercase">Owned Media</span> Print Marketing</h1>
+
+			<p class="pb-8 text-xl max-w-2xl mx-auto text-neutral-600 dark:text-neutral-300">
+				Wir vereinen technologische Innovation mit jahrzehntelanger Expertise im Direct Marketing. 
+				Als Holding der PostPal App und strategischer Partner helfen wir Marken, physische Touchpoints profitabel zu skalieren.
+			</p>
+			<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+				<Button size="lg" link="https://www.getpostpal.com/">PostPal App entdecken</Button>
+				<Button size="lg" style="secondary" link="https://calendly.com/postpal-felix/postpal-kennenlernen">Strategie-Gespräch buchen</Button>
+			</div>
+		</Col>
+		<Col span="2" />
+	</Row>
+</Section>
