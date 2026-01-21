@@ -13,7 +13,7 @@ import ChipNotification from '../../ui/ChipNotification.astro'
 import Button from '../../ui/Button.astro'
 
 // Content
-const heroImageSrc = '/postpal-app-report.png'
+const heroImageSrc = '/postpal-app.png'
 ---
 
 <Section id="intro" padding="both" classes="hero">
@@ -35,19 +35,17 @@ const heroImageSrc = '/postpal-app-report.png'
 				Strategie, Print und Versand aus einer Hand - damit Direct-Mail-Kampagnen messbar wirken.
 			</p>
 			<div class="hero__actions animate-fadeUp [animation-delay:350ms]">
-				<Button size="base" link="https://www.getpostpal.com/">PostPal App entdecken</Button>
-				<Button
-					size="base"
-					style="secondary"
-					link="https://calendly.com/postpal-felix/postpal-kennenlernen"
-				>
-					Strategie-Gespräch buchen
+				<Button size="base" link="https://calendly.com/postpal-felix/postpal-kennenlernen">
+					Kontaktiere uns
+				</Button>
+				<Button size="base" style="secondary" link="https://www.getpostpal.com/">
+					PostPal App entdecken
 				</Button>
 			</div>
 		</Col>
 		<Col span="12" align="center" classes="mt-10">
 			<div class="hero__media animate-fadeUp [animation-delay:450ms]">
-				<img src={heroImageSrc} alt="PostPal App Report" class="hero__image" loading="lazy" />
+				<img src={heroImageSrc} alt="PostPal App" class="hero__image" loading="lazy" />
 			</div>
 		</Col>
 	</Row>
