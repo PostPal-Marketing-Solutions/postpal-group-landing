@@ -26,7 +26,7 @@ export const configData: Config = {
 		'PostPal is the leading platform for automated and personalized postcard campaigns, specifically designed for Shopify and DTC brands.',
 	ogImage: '/og.jpg',
 	logo: {
-		src: 'https://cdn.prod.website-files.com/638cb72eb9a23c52a0d461f1/63ca6423a8dd6bb68cbc175e_logo-transparent-dark.png',
+		src: '/logo.png',
 		alt: 'PostPal logo'
 	},
 	canonical: true,
