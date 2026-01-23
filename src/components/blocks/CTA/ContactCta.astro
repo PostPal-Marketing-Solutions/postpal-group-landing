@@ -1,0 +1,74 @@
+---
+// Contact CTA Section
+// ------------
+// Description: A clean, centered call-to-action inviting visitors to contact us.
+
+// Components
+// - Layout
+import Section from '../../ui/Section.astro'
+import Row from '../../ui/Row.astro'
+import Col from '../../ui/Col.astro'
+// - UI
+import Button from '../../ui/Button.astro'
+
+const contactCta = {
+	title: 'Lass uns über deine Direct-Mail-Ziele sprechen',
+	subtitle:
+		'Buche ein kurzes Gespräch mit unserem Team und erfahre, wie PostPal Strategie, Print und Versand messbar macht.',
+	primary: {
+		label: 'Termin vereinbaren',
+		link: 'https://calendly.com/postpal-felix/postpal-kennenlernen'
+	}
+}
+---
+
+<Section id="contact-cta" padding="both" classes="contact-cta">
+	<Row>
+		<Col span="12" align="center" classes="contact-cta__col">
+			<div class="contact-cta__content">
+				<h2 class="contact-cta__title animate-fadeUp [animation-delay:50ms]">
+					{contactCta.title}
+				</h2>
+				<p class="contact-cta__subtitle animate-fadeUp [animation-delay:150ms]">
+					{contactCta.subtitle}
+				</p>
+				<div class="contact-cta__actions animate-fadeUp [animation-delay:250ms]">
+					<Button size="sm" link={contactCta.primary.link}>
+						{contactCta.primary.label}
+					</Button>
+				</div>
+			</div>
+		</Col>
+	</Row>
+</Section>
+
+<style>
+	:global(.contact-cta) {
+		@apply relative;
+		background-color: #ffffff;
+	}
+
+	:global(.dark .contact-cta) {
+		background-color: #0d1011;
+	}
+
+	.contact-cta__col {
+		@apply mx-auto max-w-4xl;
+	}
+
+	.contact-cta__content {
+		@apply flex flex-col items-center text-center;
+	}
+
+	.contact-cta__title {
+		@apply text-4xl font-bold leading-tight text-neutral-900 sm:text-5xl dark:text-white;
+	}
+
+	.contact-cta__subtitle {
+		@apply mt-4 text-lg text-neutral-600 dark:text-neutral-300;
+	}
+
+	.contact-cta__actions {
+		@apply mt-8 flex flex-col items-center gap-4 sm:flex-row;
+	}
+</style>
