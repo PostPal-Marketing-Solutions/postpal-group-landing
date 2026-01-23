@@ -1,0 +1,166 @@
+---
+// Case Studies Section
+// ------------
+// Description: A section displaying case study cards with images, tags, and links.
+
+// Components
+// - Layout
+import Section from '../../ui/Section.astro'
+import Row from '../../ui/Row.astro'
+import Col from '../../ui/Col.astro'
+// - UI
+import { Image } from 'astro:assets'
+import { Icon } from 'astro-icon/components'
+
+// Content
+import caseStudyImage01 from '../../../assets/case-studies/case-study-1.png'
+import caseStudyImage02 from '../../../assets/case-studies/case-study-2.png'
+
+interface CaseStudy {
+	image: any
+	title: string
+	description: string
+	tags: string[]
+	link: string
+}
+
+const caseStudies: CaseStudy[] = [
+	{
+		image: caseStudyImage01,
+		title: 'Wie du mit Kontrollgruppen den wahren ROI deiner Direct-Mail-Kampagnen misst',
+		description:
+			'Erfahre, wie du mit Kontrollgruppen den echten ROI deiner Direct-Mail-Kampagnen misst. Verstehe den Unterschied zwischen Gutscheinen, Reagierern und inkrementellem Lift – und wie PostPal die Analyse vollständig automatisiert.',
+		tags: ['Wissen', 'Shopify', 'ROI'],
+		link: 'https://www.getpostpal.com/postkarten-marketing/wie-du-mit-kontrollgruppen-den-wahren-roi-deiner-direct-mail-kampagnen-misst'
+	},
+	{
+		image: caseStudyImage02,
+		title: 'Neues Feature: Kontrollgruppe anlegen. Direct Mail endlich sauber messen.',
+		description:
+			'Direct Mail ist einer der stärksten Kanäle für Wiederkäufe. Doch eine Frage war bisher schwer zu beantworten.',
+		tags: ['Feature', 'Direct Mail', 'Kontrollgruppe'],
+		link: 'https://www.getpostpal.com/postkarten-marketing/neues-feature-kontrollgruppe-anlegen-direct-mail-endlich-sauber-messen'
+	}
+]
+
+const columnSpan = caseStudies.length === 1 ? '12' : caseStudies.length === 2 ? '6' : '4'
+---
+
+<Section id="case-studies" padding="both" classes="case-studies-section">
+	<Row>
+		<Col span="12" align="center" classes="mb-12 max-w-4xl mx-auto">
+			<h2 class="case-studies__title animate-fadeUp [animation-delay:50ms]">Fallstudien</h2>
+			<p class="case-studies__subtitle animate-fadeUp [animation-delay:150ms]">
+				So helfen wir Marken, messbares Wachstum mit Print und Automation zu erzielen.
+			</p>
+		</Col>
+	</Row>
+	<Row classes="gap-8">
+		{
+			caseStudies.map((study, index) => (
+				<Col span={columnSpan} classes="case-studies__col">
+					<a
+						class="case-study-card animate-fadeUp"
+						style={`animation-delay: ${250 + index * 100}ms`}
+						href={study.link}
+						aria-label={`Fallstudie lesen: ${study.title}`}
+					>
+						<div class="case-study-card__media">
+							<Image
+								src={study.image}
+								alt={study.title}
+								width={1200}
+								height={800}
+								class="case-study-card__image"
+								loading="lazy"
+								decoding="async"
+							/>
+						</div>
+						<div class="case-study-card__body">
+							<div class="case-study-card__tags">
+								{study.tags.map((tag) => (
+									<span class="case-study-card__tag">{tag}</span>
+								))}
+							</div>
+							<h3 class="case-study-card__title">{study.title}</h3>
+							<p class="case-study-card__text">{study.description}</p>
+							<span class="case-study-card__link">
+								Fallstudie lesen
+								<Icon name="long-arrow-right" class="case-study-card__link-icon" />
+							</span>
+						</div>
+					</a>
+				</Col>
+			))
+		}
+	</Row>
+</Section>
+
+<style>
+	:global(.case-studies-section) {
+		@apply relative;
+		background-color: #f7f3ee;
+	}
+
+	:global(.dark .case-studies-section) {
+		background-color: #111415;
+	}
+
+	.case-studies__title {
+		@apply mb-4 text-4xl font-bold leading-tight text-neutral-900 sm:text-5xl dark:text-white;
+	}
+
+	.case-studies__subtitle {
+		@apply text-lg text-neutral-600 dark:text-neutral-300;
+	}
+
+	.case-studies__col {
+		@apply mb-6 lg:mb-0;
+	}
+
+	.case-study-card {
+		@apply flex h-full flex-col overflow-hidden rounded-3xl border border-neutral-200/60 bg-white/90 shadow-2xl shadow-neutral-900/10 backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-neutral-900/20 dark:border-white/10 dark:bg-neutral-900/70 dark:shadow-black/40;
+	}
+
+	.case-study-card__media {
+		@apply relative h-52 w-full overflow-hidden sm:h-60 lg:h-64;
+	}
+
+	.case-study-card__image {
+		@apply h-full w-full object-cover;
+	}
+
+	.case-study-card__body {
+		@apply flex flex-1 flex-col px-7 pb-7 pt-6;
+	}
+
+	.case-study-card__tags {
+		@apply mb-4 flex flex-wrap gap-2;
+	}
+
+	.case-study-card__tag {
+		@apply inline-flex items-center rounded-full bg-neutral-900/5 px-3 py-1 text-xs font-semibold text-neutral-600 dark:bg-white/10 dark:text-neutral-200;
+	}
+
+	.case-study-card__title {
+		@apply mb-3 text-2xl font-semibold leading-tight text-neutral-900 dark:text-white;
+	}
+
+	.case-study-card__text {
+		@apply mb-6 text-base leading-relaxed text-neutral-600 dark:text-neutral-300;
+	}
+
+	.case-study-card__link {
+		@apply mt-auto inline-flex items-center gap-2 text-sm font-semibold text-primary-600 transition-colors hover:text-primary-700 dark:text-primary-300 dark:hover:text-primary-200;
+	}
+
+	.case-study-card__link-icon {
+		@apply h-4 w-4;
+	}
+
+	@media (max-width: 1024px) {
+		.case-studies__col {
+			@apply col-span-12;
+		}
+	}
+</style>
