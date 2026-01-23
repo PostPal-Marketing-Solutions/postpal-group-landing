@@ -19,22 +19,40 @@ interface Industry {
 
 const industries: Industry[] = [
 	{
-		icon: 'credit-card',
-		title: 'Finanzdienstleistungen',
-		description:
-			'Regelkonforme Mailings fuer Banken, Fintechs und Versicherer, die Vertrauen aufbauen und Kunden binden.'
-	},
-	{
-		icon: 'shield-check',
-		title: 'Gesundheitswesen',
-		description:
-			'Datenschutzkonforme Kommunikation fuer Kliniken, Praxen und Health-Techs von Terminerinnerungen bis zur Patientenbindung.'
-	},
-	{
 		icon: 'shopping-cart',
 		title: 'E-Commerce',
 		description:
-			'Personalisierte Postkarten fuer Shop- und DTC-Marken, die Reaktivierung und Wiederkaeufe steigern.'
+			'Personalisierte Postkarten für Shop- und DTC-Marken, die Reaktivierung und Wiederkäufe steigern.'
+	},
+	{
+		icon: 'paint-brush',
+		title: 'Marketing & Werbung',
+		description:
+			'Integrierte Direct-Mail-Lösungen für Agenturen, die Omnichannel-Kampagnen mit Print erweitern.'
+	},
+	{
+		icon: 'clipboard-document-list',
+		title: 'Gesundheitswesen',
+		description:
+			'Sichere Mailings für Kliniken, Praxen und Gesundheitsanbieter zur Patientenbindung und -aufklärung.'
+	},
+	{
+		icon: 'key',
+		title: 'Immobilien',
+		description:
+			'Gezielte Postkartenkampagnen für Makler und Immobilienfirmen zur Lead-Generierung und Kundenbindung.'
+	},
+	{
+		icon: 'chart-pie',
+		title: 'Finanzdienstleistungen',
+		description:
+			'Regelkonforme Mailings für Banken, Fintechs und Versicherer, die Vertrauen aufbauen und Kunden binden.'
+	},
+	{
+		icon: 'trophy',
+		title: 'Events & Sport',
+		description:
+			'Direkte Kommunikation für Konzerte, Festivals und Sportevents, die echte Fans aktiviert und die Bindung stärkt.'
 	}
 ]
 ---
@@ -46,7 +64,7 @@ const industries: Industry[] = [
 				Branchen, die wir betreuen
 			</h2>
 			<p class="industries-section__subtitle animate-fadeUp [animation-delay:150ms]">
-				Innovative Print- und Direct-Mail-Loesungen fuer Unternehmen in unterschiedlichen Sektoren
+				Innovative Print- und Direct-Mail-Lösungen für Unternehmen in unterschiedlichen Sektoren
 			</p>
 		</Col>
 	</Row>
@@ -82,7 +100,7 @@ const industries: Industry[] = [
 	}
 
 	.industries-section__title {
-		@apply mb-4 text-4xl font-bold leading-tight text-neutral-900 dark:text-white sm:text-5xl;
+		@apply mb-4 text-4xl font-bold leading-tight text-neutral-900 sm:text-5xl dark:text-white;
 	}
 
 	.industries-section__subtitle {
