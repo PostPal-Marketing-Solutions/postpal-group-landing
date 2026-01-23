@@ -25,7 +25,8 @@ const services: Service[] = [
 	{
 		icon: 'document-chart-bar',
 		title: 'Strategische Beratung & Planung',
-		description: 'Entwickeln Sie umfassende Print-Marketing-Strategien, die auf Ihre Geschäftsziele und Zielgruppe zugeschnitten sind.',
+		description:
+			'Entwickeln Sie umfassende Print-Marketing-Strategien, die auf Ihre Geschäftsziele und Zielgruppe zugeschnitten sind.',
 		features: [
 			'Marktanalyse & Zielgruppenforschung',
 			'Kampagnen-Strategieentwicklung',
@@ -37,7 +38,8 @@ const services: Service[] = [
 	{
 		icon: 'document-text',
 		title: 'Kampagnenentwicklung & Umsetzung',
-		description: 'Von der Konzeption bis zur Auslieferung übernehmen wir jeden Aspekt Ihrer Direct-Mail-Kampagnen mit Präzision und Expertise.',
+		description:
+			'Von der Konzeption bis zur Auslieferung übernehmen wir jeden Aspekt Ihrer Direct-Mail-Kampagnen mit Präzision und Expertise.',
 		features: [
 			'Kreative Konzeptentwicklung',
 			'Design & Texterstellung',
@@ -49,7 +51,8 @@ const services: Service[] = [
 	{
 		icon: 'rectangle-stack',
 		title: 'Druckproduktion & Versand',
-		description: 'End-to-End-Druckproduktion und globale Versandservices, die Qualität und pünktliche Auslieferung gewährleisten.',
+		description:
+			'End-to-End-Druckproduktion und globale Versandservices, die Qualität und pünktliche Auslieferung gewährleisten.',
 		features: [
 			'Hochwertige Druckproduktion',
 			'Deutschlandweiter Versand & Fulfillment',
@@ -84,31 +87,26 @@ const services: Service[] = [
 						<h3 class="service-card__title">{service.title}</h3>
 						<p class="service-card__description">{service.description}</p>
 						<ul class="service-card__features">
-							{
-								service.features.map((feature) => (
-									<li class="service-card__feature-item">
-										<span class="service-card__feature-arrow">→</span>
-										<span class="service-card__feature-text">{feature}</span>
-									</li>
-								))
-							}
+							{service.features.map((feature) => (
+								<li class="service-card__feature-item">
+									<span class="service-card__feature-text">{feature}</span>
+								</li>
+							))}
 						</ul>
-						{
-							service.link && (
-								<div class="service-card__cta">
-									<Button
-										type="link"
-										link={service.link}
-										style="neutral"
-										variation="link"
-										size="sm"
-										classes="service-card__link"
-									>
-										Mehr erfahren
-									</Button>
-								</div>
-							)
-						}
+						{service.link && (
+							<div class="service-card__cta">
+								<Button
+									type="link"
+									link={service.link}
+									style="neutral"
+									variation="link"
+									size="sm"
+									classes="service-card__link"
+								>
+									Mehr erfahren
+								</Button>
+							</div>
+						)}
 					</div>
 				</Col>
 			))
@@ -117,12 +115,17 @@ const services: Service[] = [
 </Section>
 
 <style>
-	.services-section {
-		@apply bg-neutral-50 dark:bg-neutral-950;
+	:global(.services-section) {
+		@apply relative;
+		background-color: #f7f3ee;
+	}
+
+	:global(.dark .services-section) {
+		background-color: #111415;
 	}
 
 	.services-section__title {
-		@apply mb-4 text-4xl font-bold leading-tight text-neutral-900 dark:text-white sm:text-5xl;
+		@apply mb-4 text-4xl font-bold leading-tight text-neutral-900 sm:text-5xl dark:text-white;
 	}
 
 	.services-section__subtitle {
@@ -164,7 +167,7 @@ const services: Service[] = [
 	}
 
 	.service-card__feature-arrow {
-		@apply shrink-0 text-primary-600 dark:text-primary-400 font-semibold;
+		@apply shrink-0 font-semibold text-primary-600 dark:text-primary-400;
 		margin-right: 0.5rem;
 		display: inline-block;
 	}
@@ -182,7 +185,7 @@ const services: Service[] = [
 	}
 
 	.service-card__link:hover {
-		@apply bg-neutral-800 dark:bg-neutral-700 text-white rounded-lg px-4 py-2;
+		@apply rounded-lg bg-neutral-800 px-4 py-2 text-white dark:bg-neutral-700;
 	}
 
 	.service-card__link:hover .service-card__link-icon {
