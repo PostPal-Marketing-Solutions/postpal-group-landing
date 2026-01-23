@@ -24,9 +24,28 @@ const { flex, mode, classes } = Astro.props
 
 <style>
 	.row {
-		@apply grid grid-cols-4 gap-6 md:grid-cols-8 lg:grid-cols-12;
+		@apply grid grid-cols-4 gap-6;
 	}
+	
+	@media (min-width: 768px) {
+		.row {
+			grid-template-columns: repeat(8, minmax(0, 1fr));
+		}
+	}
+	
+	@media (min-width: 1024px) {
+		.row {
+			grid-template-columns: repeat(12, minmax(0, 1fr));
+		}
+	}
+	
 	.row--flex {
-		@apply flex w-full flex-col flex-wrap items-center justify-center lg:flex-row;
+		@apply flex w-full flex-col flex-wrap items-center justify-center;
+	}
+	
+	@media (min-width: 1024px) {
+		.row--flex {
+			flex-direction: row;
+		}
 	}
 </style>

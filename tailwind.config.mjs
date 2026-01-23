@@ -8,6 +8,9 @@ export default {
       pattern: /col-span-(\d+)/,
       variants: ["lg"],
     },
+    "col-span-12",
+    "col-span-4",
+    "lg:col-span-4",
     // Height
     {
       pattern: /h-(0|2|3|4|6|8|12|16|24|32)/,
