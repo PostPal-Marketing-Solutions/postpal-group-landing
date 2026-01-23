@@ -1,0 +1,121 @@
+---
+// Industries We Serve Section
+// ------------
+// Description: A section displaying three industry cards with icon, title, and description.
+
+// Components
+// - Layout
+import Section from '../../ui/Section.astro'
+import Row from '../../ui/Row.astro'
+import Col from '../../ui/Col.astro'
+// - UI
+import { Icon } from 'astro-icon/components'
+
+interface Industry {
+	icon: string
+	title: string
+	description: string
+}
+
+const industries: Industry[] = [
+	{
+		icon: 'credit-card',
+		title: 'Finanzdienstleistungen',
+		description:
+			'Regelkonforme Mailings fuer Banken, Fintechs und Versicherer, die Vertrauen aufbauen und Kunden binden.'
+	},
+	{
+		icon: 'shield-check',
+		title: 'Gesundheitswesen',
+		description:
+			'Datenschutzkonforme Kommunikation fuer Kliniken, Praxen und Health-Techs von Terminerinnerungen bis zur Patientenbindung.'
+	},
+	{
+		icon: 'shopping-cart',
+		title: 'E-Commerce',
+		description:
+			'Personalisierte Postkarten fuer Shop- und DTC-Marken, die Reaktivierung und Wiederkaeufe steigern.'
+	}
+]
+---
+
+<Section id="industries" padding="both" classes="industries-section">
+	<Row>
+		<Col span="12" align="center" classes="mb-12 max-w-4xl mx-auto">
+			<h2 class="industries-section__title animate-fadeUp [animation-delay:50ms]">
+				Branchen, die wir betreuen
+			</h2>
+			<p class="industries-section__subtitle animate-fadeUp [animation-delay:150ms]">
+				Innovative Print- und Direct-Mail-Loesungen fuer Unternehmen in unterschiedlichen Sektoren
+			</p>
+		</Col>
+	</Row>
+	<Row>
+		{
+			industries.map((industry, index) => (
+				<Col span="4" classes="industries-section__col">
+					<div
+						class="industry-card animate-fadeUp"
+						style={`animation-delay: ${250 + index * 100}ms`}
+					>
+						<div class="industry-card__icon">
+							<Icon name={industry.icon} class="industry-card__icon-svg" />
+						</div>
+						<h3 class="industry-card__title">{industry.title}</h3>
+						<p class="industry-card__description">{industry.description}</p>
+					</div>
+				</Col>
+			))
+		}
+	</Row>
+</Section>
+
+<style>
+	.industries-section {
+		--industries-bg: radial-gradient(120% 120% at 50% -10%, #f8f9f9 0%, #ffffff 45%, #e6f1ef 100%);
+		@apply relative;
+		background: var(--industries-bg);
+	}
+
+	:global(.dark) .industries-section {
+		--industries-bg: radial-gradient(120% 120% at 50% -10%, #0d1011 0%, #0b1316 55%, #00201b 100%);
+	}
+
+	.industries-section__title {
+		@apply mb-4 text-4xl font-bold leading-tight text-neutral-900 dark:text-white sm:text-5xl;
+	}
+
+	.industries-section__subtitle {
+		@apply text-lg text-neutral-600 dark:text-neutral-300;
+	}
+
+	.industries-section__col {
+		@apply mb-6 lg:mb-0;
+	}
+
+	.industry-card {
+		@apply flex h-full flex-col rounded-2xl border border-neutral-200/70 bg-white/80 px-8 py-7 shadow-lg shadow-neutral-900/10 backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-neutral-900/15 dark:border-white/10 dark:bg-neutral-900/60 dark:shadow-black/30;
+	}
+
+	.industry-card__icon {
+		@apply mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary-500/10 text-primary-600 dark:bg-white/10 dark:text-primary-300;
+	}
+
+	.industry-card__icon-svg {
+		@apply h-6 w-6;
+	}
+
+	.industry-card__title {
+		@apply mb-3 text-xl font-semibold leading-tight text-neutral-900 dark:text-white;
+	}
+
+	.industry-card__description {
+		@apply text-base leading-relaxed text-neutral-600 dark:text-neutral-300;
+	}
+
+	@media (max-width: 1024px) {
+		.industries-section__col {
+			@apply col-span-12;
+		}
+	}
+</style>

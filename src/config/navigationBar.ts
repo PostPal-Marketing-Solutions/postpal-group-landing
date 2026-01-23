@@ -38,12 +38,5 @@ export const navigationBarData: NavData = {
 		text: 'PostPal'
 	},
 	navItems: [],
-	navActions: [
-		{
-			name: 'Kontaktiere uns',
-			link: 'https://calendly.com/postpal-felix/postpal-kennenlernen',
-			style: 'primary',
-			size: 'base'
-		}
-	]
+	navActions: []
 }
