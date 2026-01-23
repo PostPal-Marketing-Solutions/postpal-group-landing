@@ -67,11 +67,11 @@ export const footerNavigationData: FooterData = {
 			subCategories: [
 				{
 					subCategory: 'Impressum',
-					subCategoryLink: 'https://www.getpostpal.com/legal/impressum'
+					subCategoryLink: '/legal/impressum'
 				},
 				{
 					subCategory: 'Datenschutz',
-					subCategoryLink: 'https://www.getpostpal.com/legal/datenschutz'
+					subCategoryLink: '/legal/datenschutz'
 				}
 			]
 		}

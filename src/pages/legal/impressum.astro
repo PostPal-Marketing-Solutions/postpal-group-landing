@@ -1,0 +1,103 @@
+---
+// Impressum Page
+// ------------
+// Description: Legal notice / Impressum page for PostPal Group
+
+// Components
+// - Layout
+import Layout from '../../layouts/Layout.astro'
+// - UI
+import PageHeader from '../../components/blocks/hero/PageHeader.astro'
+import Section from '../../components/ui/Section.astro'
+import Row from '../../components/ui/Row.astro'
+import Col from '../../components/ui/Col.astro'
+
+// SEO
+const SEO = {
+	title: 'Impressum | PostPal Group',
+	description:
+		'Impressum und rechtliche Informationen der PostPal Marketing Solutions GmbH.'
+}
+---
+
+<Layout title={SEO.title} description={SEO.description}>
+	<PageHeader
+		title="Impressum"
+	/>
+
+	<Section padding="both">
+		<Row>
+			<Col span="12">
+				<div class="legal-content">
+					<p>
+						www.postpalgroup.com ist ein Angebot der
+					</p>
+
+					<p>
+						<strong>PostPal Marketing Solutions GmbH</strong><br />
+						Hammerstraße 2a<br />
+						14167 Berlin
+					</p>
+
+					<p>
+						Sitz der Gesellschaft: Berlin<br />
+						eingetragen beim Amtsgericht Charlottenburg unter HRB 249111B
+					</p>
+
+					<h3>Geschäftsführung</h3>
+					<p>Felix Vögtle</p>
+
+					<h3>Kontakt</h3>
+					<p>service@getpostpal.com</p>
+
+					<h3>Umsatzsteueridentifikationsnummer</h3>
+					<p>DE358779591</p>
+
+					<h3>Externer Datenschutzbeauftragter</h3>
+					<p>
+						Boris Puhaca<br />
+						Email: datenschutz@getpostpal.com
+					</p>
+
+					<p>
+						Für alle Anfragen und Bedenken in Bezug auf die Sicherheit Ihrer Daten, steht Ihnen unser
+						Datenschutzbeauftragter unter der Email-Adresse datenschutz@getpostpal.com zur Verfügung.
+					</p>
+
+					<p>
+						Sollten Sie ein besonders sensibles Anliegen haben, empfehlen wir Ihnen, unseren
+						Datenschutzbeauftragten per Post zu kontaktieren, da die Kommunikation per E-Mail immer das
+						Risiko von Sicherheitslücken beinhalten kann. Bitte geben Sie bei Ihrer Anfrage an, dass es
+						sich um ein Anliegen bezüglich der Firma PostPal Marketing Solutions GmbH handelt.
+					</p>
+				</div>
+			</Col>
+		</Row>
+	</Section>
+</Layout>
+
+<style>
+	.legal-content {
+		@apply mx-auto max-w-3xl space-y-6 text-neutral-700 dark:text-neutral-300;
+	}
+
+	.legal-content h2 {
+		@apply mb-4 text-2xl font-bold text-neutral-900 dark:text-neutral-50;
+	}
+
+	.legal-content h3 {
+		@apply mb-3 mt-6 text-xl font-semibold text-neutral-800 dark:text-neutral-100;
+	}
+
+	.legal-content h4 {
+		@apply mb-2 mt-4 text-lg font-medium text-neutral-800 dark:text-neutral-100;
+	}
+
+	.legal-content p {
+		@apply leading-relaxed;
+	}
+
+	.legal-content strong {
+		@apply font-semibold text-neutral-900 dark:text-neutral-50;
+	}
+</style>
