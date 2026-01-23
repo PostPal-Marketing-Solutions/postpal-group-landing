@@ -1,0 +1,202 @@
+---
+// Our Services Section
+// ------------
+// Description: A section displaying PostPal Group's print marketing consultant services in a modern card layout
+
+// Components
+// - Layout
+import Section from '../../ui/Section.astro'
+import Row from '../../ui/Row.astro'
+import Col from '../../ui/Col.astro'
+// - UI
+import { Icon } from 'astro-icon/components'
+import Button from '../../ui/Button.astro'
+
+// Service data structure
+interface Service {
+	icon: string
+	title: string
+	description: string
+	features: string[]
+	link?: string
+}
+
+const services: Service[] = [
+	{
+		icon: 'document-chart-bar',
+		title: 'Strategische Beratung & Planung',
+		description: 'Entwickeln Sie umfassende Print-Marketing-Strategien, die auf Ihre Geschäftsziele und Zielgruppe zugeschnitten sind.',
+		features: [
+			'Marktanalyse & Zielgruppenforschung',
+			'Kampagnen-Strategieentwicklung',
+			'ROI-Planung & Budgetoptimierung',
+			'Wettbewerbsanalyse'
+		],
+		link: 'https://calendly.com/postpal-felix/postpal-kennenlernen'
+	},
+	{
+		icon: 'document-text',
+		title: 'Kampagnenentwicklung & Umsetzung',
+		description: 'Von der Konzeption bis zur Auslieferung übernehmen wir jeden Aspekt Ihrer Direct-Mail-Kampagnen mit Präzision und Expertise.',
+		features: [
+			'Kreative Konzeptentwicklung',
+			'Design & Texterstellung',
+			'Kampagnen-Automatisierung',
+			'Performance-Tracking & Analyse'
+		],
+		link: 'https://calendly.com/postpal-felix/postpal-kennenlernen'
+	},
+	{
+		icon: 'rectangle-stack',
+		title: 'Druckproduktion & Versand',
+		description: 'End-to-End-Druckproduktion und globale Versandservices, die Qualität und pünktliche Auslieferung gewährleisten.',
+		features: [
+			'Hochwertige Druckproduktion',
+			'Deutschlandweiter Versand & Fulfillment',
+			'Qualitätskontrolle & Tests',
+			'Lagerverwaltung'
+		],
+		link: 'https://calendly.com/postpal-felix/postpal-kennenlernen'
+	}
+]
+---
+
+<Section id="services" padding="both" classes="services-section">
+	<Row>
+		<Col span="12" align="center" classes="mb-12 max-w-4xl mx-auto">
+			<h2 class="services-section__title animate-fadeUp [animation-delay:50ms]">
+				Unsere Leistungen
+			</h2>
+			<p class="services-section__subtitle animate-fadeUp [animation-delay:150ms]">
+				Umfassende Print-Marketing-Lösungen, die auf Ihr Unternehmen zugeschnitten sind
+			</p>
+		</Col>
+	</Row>
+	<Row>
+		{
+			services.map((service, index) => (
+				<Col span="4" classes="services-section__col">
+					<div
+						class="service-card animate-fadeUp"
+						style={`animation-delay: ${250 + index * 100}ms`}
+					>
+						<Icon name={service.icon} class="service-card__icon-svg" />
+						<h3 class="service-card__title">{service.title}</h3>
+						<p class="service-card__description">{service.description}</p>
+						<ul class="service-card__features">
+							{
+								service.features.map((feature) => (
+									<li class="service-card__feature-item">
+										<span class="service-card__feature-arrow">→</span>
+										<span class="service-card__feature-text">{feature}</span>
+									</li>
+								))
+							}
+						</ul>
+						{
+							service.link && (
+								<div class="service-card__cta">
+									<Button
+										type="link"
+										link={service.link}
+										style="neutral"
+										variation="link"
+										size="sm"
+										classes="service-card__link"
+									>
+										Mehr erfahren
+									</Button>
+								</div>
+							)
+						}
+					</div>
+				</Col>
+			))
+		}
+	</Row>
+</Section>
+
+<style>
+	.services-section {
+		@apply bg-neutral-50 dark:bg-neutral-950;
+	}
+
+	.services-section__title {
+		@apply mb-4 text-4xl font-bold leading-tight text-neutral-900 dark:text-white sm:text-5xl;
+	}
+
+	.services-section__subtitle {
+		@apply text-lg text-neutral-600 dark:text-neutral-300;
+	}
+
+	.services-section__col {
+		@apply mb-6 lg:mb-0;
+	}
+
+	.service-card {
+		@apply flex h-full flex-col rounded-2xl border border-neutral-200/70 bg-white px-8 py-6 shadow-lg shadow-neutral-900/5 transition-all duration-300 hover:shadow-xl hover:shadow-neutral-900/10 dark:border-neutral-800/50 dark:bg-neutral-900/50 dark:shadow-black/20 hover:dark:shadow-black/30;
+	}
+
+	.service-card__icon-svg {
+		@apply mb-4 h-10 w-10 text-primary-600 dark:text-primary-400;
+	}
+
+	.service-card__title {
+		@apply mb-3 text-xl font-bold leading-tight text-neutral-900 dark:text-white;
+	}
+
+	.service-card__description {
+		@apply mb-6 text-base leading-relaxed text-neutral-600 dark:text-neutral-300;
+	}
+
+	.service-card__features {
+		@apply mb-8 flex-1 space-y-4;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.service-card__feature-item {
+		@apply flex items-start text-sm leading-relaxed text-neutral-700 dark:text-neutral-300;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.service-card__feature-arrow {
+		@apply shrink-0 text-primary-600 dark:text-primary-400 font-semibold;
+		margin-right: 0.5rem;
+		display: inline-block;
+	}
+
+	.service-card__feature-text {
+		@apply flex-1;
+	}
+
+	.service-card__cta {
+		@apply mt-auto pt-6;
+	}
+
+	.service-card__link {
+		@apply gap-1 transition-all duration-300;
+	}
+
+	.service-card__link:hover {
+		@apply bg-neutral-800 dark:bg-neutral-700 text-white rounded-lg px-4 py-2;
+	}
+
+	.service-card__link:hover .service-card__link-icon {
+		@apply hidden;
+	}
+
+	.service-card__link-icon {
+		@apply h-4 w-4;
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 1024px) {
+		.services-section__col {
+			@apply col-span-12;
+		}
+	}
+</style>
