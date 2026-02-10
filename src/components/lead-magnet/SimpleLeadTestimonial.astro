@@ -105,6 +105,8 @@ const { testimonials = defaultTestimonials } = Astro.props
 		const dots = Array.from(section.querySelectorAll('[data-slide-dot]'))
 		let activeIndex = 0
 		let didInit = false
+		let isScrollTicking = false
+		let scrollEndFallbackTimer
 
 		const setActive = (index) => {
 			if (!cards.length || !dots.length) return
@@ -121,10 +123,32 @@ const { testimonials = defaultTestimonials } = Astro.props
 			})
 		}
 
+		const getNearestCardIndex = () => {
+			if (!cards.length) return 0
+			const currentOffset = container.scrollLeft
+			let nearestIndex = 0
+			let nearestDistance = Number.POSITIVE_INFINITY
+
+			cards.forEach((card, index) => {
+				const distance = Math.abs(card.offsetLeft - currentOffset)
+				if (distance < nearestDistance) {
+					nearestDistance = distance
+					nearestIndex = index
+				}
+			})
+
+			return nearestIndex
+		}
+
+		const syncActiveFromScroll = () => {
+			setActive(getNearestCardIndex())
+		}
+
 		const goTo = (index) => {
 			if (!cards.length) return
 			const bounded = Math.max(0, Math.min(index, cards.length - 1))
 			const target = cards[bounded]
+			setActive(bounded)
 			target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
 		}
 
@@ -145,34 +169,28 @@ const { testimonials = defaultTestimonials } = Astro.props
 
 			if (cards.length < 2) return
 
-			const visibilityObserver = new IntersectionObserver(
-				(entries) => {
-					let bestIndex = activeIndex
-					let bestRatio = 0
-
-					entries.forEach((entry) => {
-						if (!(entry.target instanceof HTMLElement)) return
-						const index = cards.indexOf(entry.target)
-						if (index < 0) return
-						if (entry.intersectionRatio > bestRatio) {
-							bestRatio = entry.intersectionRatio
-							bestIndex = index
-						}
-					})
-
-					if (bestRatio > 0) {
-						setActive(bestIndex)
+			container.addEventListener(
+				'scroll',
+				() => {
+					if (!isScrollTicking) {
+						isScrollTicking = true
+						window.requestAnimationFrame(() => {
+							syncActiveFromScroll()
+							isScrollTicking = false
+						})
 					}
+
+					if (typeof scrollEndFallbackTimer === 'number') {
+						window.clearTimeout(scrollEndFallbackTimer)
+					}
+					scrollEndFallbackTimer = window.setTimeout(syncActiveFromScroll, 120)
 				},
-				{
-					root: container,
-					threshold: [0.45, 0.6, 0.75]
-				}
+				{ passive: true }
 			)
 
-			cards.forEach((card) => {
-				visibilityObserver.observe(card)
-			})
+			if ('onscrollend' in window) {
+				container.addEventListener('scrollend', syncActiveFromScroll)
+			}
 		}
 
 		if (!isPerformanceMode) {
@@ -236,6 +254,7 @@ const { testimonials = defaultTestimonials } = Astro.props
 	.simple-lead-testimonial__card {
 		@apply shrink-0 snap-start rounded-3xl border border-primary-200/55 bg-transparent p-6 sm:p-7 lg:p-8;
 		width: min(78%, 48rem);
+		scroll-snap-stop: always;
 		box-shadow: none;
 	}
 
