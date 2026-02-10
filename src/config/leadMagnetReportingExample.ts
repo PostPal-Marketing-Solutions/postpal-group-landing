@@ -1,10 +1,11 @@
 export type LeadMagnetState = 'gated' | 'submitted' | 'known'
+export type LeadSource = 'outreach' | 'ad' | 'social' | 'organic'
 
 export type LeadCapturePayload = {
 	email: string
-	first_name?: string
+	name?: string
 	consent_marketing?: boolean
-	lead_source: 'outreach'
+	lead_source: LeadSource
 	asset_id: 'reporting-example-pdf-v1'
 	utm_source?: string
 	utm_medium?: string
@@ -16,7 +17,22 @@ export type LeadCapturePayload = {
 export type KnownLeadAccess = {
 	state: 'known'
 	token: string
-	first_name?: string
+	name?: string
+}
+
+export type ResolveKnownLeadResponse = {
+	ok: boolean
+	known: boolean
+	tokenMatched: boolean
+	name: string
+	leadRecordId: string | null
+}
+
+export type CaptureLeadResponse = {
+	ok: boolean
+	leadRecordId: string | null
+	tokenMatched: boolean
+	state: 'submitted'
 }
 
 export const LEAD_MAGNET_EVENTS = {
@@ -76,7 +92,8 @@ export const CREDIBILITY_ITEMS = [
 	'RFM-Logik für planbare CRM-Entscheidungen'
 ] as const
 
-export const KNOWN_LEAD_TOKENS: Record<string, { firstName?: string }> = {
+// Deprecated: production known-lead validation now happens server-side via Airtable lookups.
+export const DEPRECATED_KNOWN_LEAD_TOKENS: Record<string, { firstName?: string }> = {
 	'demo-felix': { firstName: 'Felix' },
 	'demo-sarah': { firstName: 'Sarah' },
 	'demo-growth-team': {}

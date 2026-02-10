@@ -10,11 +10,7 @@ import SimpleLeadQuoteEndorsement from '../components/lead-magnet/SimpleLeadQuot
 import SimpleLeadFaqSection from '../components/lead-magnet/SimpleLeadFaqSection.astro'
 import SimpleLeadAppPromo from '../components/lead-magnet/SimpleLeadAppPromo.astro'
 import previewImage from '../assets/hero-book-mockup.png'
-import {
-	KNOWN_LEAD_TOKENS,
-	LEAD_MAGNET_EVENTS,
-	REPORTING_EXAMPLE_ASSET
-} from '../config/leadMagnetReportingExample'
+import { LEAD_MAGNET_EVENTS, REPORTING_EXAMPLE_ASSET } from '../config/leadMagnetReportingExample'
 
 const SEO = {
 	title: 'CRM Print-Mailing Playbook 2026 kostenlos herunterladen | PostPal',
@@ -38,7 +34,6 @@ const SEO = {
 		data-performance-mode="true"
 		data-events={JSON.stringify(LEAD_MAGNET_EVENTS)}
 		data-asset={JSON.stringify(REPORTING_EXAMPLE_ASSET)}
-		data-known-lead-tokens={JSON.stringify(KNOWN_LEAD_TOKENS)}
 	>
 		<SimpleLeadHero
 			previewImage={previewImage}

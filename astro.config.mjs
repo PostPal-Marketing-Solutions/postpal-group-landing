@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@astrojs/tailwind";
 import icon from "astro-icon";
+import vercel from "@astrojs/vercel";
 
 import sitemap from "@astrojs/sitemap";
 
@@ -19,6 +20,8 @@ const siteUrl =
 // https://astro.build/config
 export default defineConfig({
   site: siteUrl,
+  output: "server",
+  adapter: vercel(),
   integrations: [
     tailwind(),
     icon(),

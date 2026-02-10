@@ -57,6 +57,14 @@ Build the production-ready site to the `./dist/` directory:
 npm run build
 ```
 
+### SEO Check
+
+Run indexing checks against a running local server:
+
+```bash
+SEO_CHECK_BASE_URL=http://localhost:4321 npm run seo:check-indexing
+```
+
 ## Project Structure
 
 ```plaintext

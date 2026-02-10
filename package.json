@@ -5,10 +5,11 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build && npm run -s seo:check-indexing",
+    "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "seo:check-indexing": "node scripts/check-seo-indexing.mjs"
+    "seo:check-indexing": "node scripts/check-seo-indexing.mjs",
+    "release:check": "npm run build && npm run -s seo:check-indexing"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.5",
