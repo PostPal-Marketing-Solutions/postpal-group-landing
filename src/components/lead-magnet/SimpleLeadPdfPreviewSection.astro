@@ -324,11 +324,21 @@ const {
 	}
 
 	.simple-lead-pdf-preview__dot {
-		@apply h-2.5 w-2.5 rounded-full bg-neutral-400/70 transition;
+		@apply relative inline-flex h-8 w-8 items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+		background: transparent;
+	}
+
+	.simple-lead-pdf-preview__dot::before {
+		content: '';
+		@apply h-2.5 w-2.5 rounded-full bg-neutral-500/80 transition;
 	}
 
 	.simple-lead-pdf-preview__dot.is-active {
-		@apply bg-primary-600;
+		background: rgba(0, 96, 82, 0.1);
+	}
+
+	.simple-lead-pdf-preview__dot.is-active::before {
+		@apply bg-primary-700;
 	}
 
 	@media (max-width: 640px) {

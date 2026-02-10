@@ -3,7 +3,7 @@
 import { googleAnalyticsMeasurementID } from '../../../src/config/analytics.ts'
 ---
 
-<script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsMeasurementID}`}></script>
+<script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsMeasurementID}`}></script>
 
 <script is:inline define:vars={{ googleAnalyticsMeasurementID }}>
 	window.dataLayer = window.dataLayer || []

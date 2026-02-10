@@ -190,7 +190,7 @@ const { testimonials = defaultTestimonials } = Astro.props
 	}
 
 	:global([data-lead-magnet-gsap]) .simple-lead-testimonial__card {
-		opacity: 0.72;
+		opacity: 1;
 		transform: scale(0.988);
 		border-color: rgba(148, 160, 164, 0.38);
 		background-color: rgba(248, 249, 249, 0.45);
@@ -219,7 +219,7 @@ const { testimonials = defaultTestimonials } = Astro.props
 	}
 
 	.simple-lead-testimonial__rating p {
-		@apply m-0 text-sm font-medium text-neutral-600;
+		@apply m-0 text-sm font-semibold text-neutral-800;
 	}
 
 	.simple-lead-testimonial blockquote {
@@ -240,7 +240,7 @@ const { testimonials = defaultTestimonials } = Astro.props
 	}
 
 	.simple-lead-testimonial__author p:last-child {
-		@apply m-0 text-sm text-neutral-600;
+		@apply m-0 text-sm text-neutral-800;
 	}
 
 	.simple-lead-testimonial__dots {
@@ -248,11 +248,21 @@ const { testimonials = defaultTestimonials } = Astro.props
 	}
 
 	.simple-lead-testimonial__dot {
-		@apply h-2.5 w-2.5 rounded-full bg-neutral-400/70 transition;
+		@apply relative inline-flex h-8 w-8 items-center justify-center rounded-full transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+		background: transparent;
+	}
+
+	.simple-lead-testimonial__dot::before {
+		content: '';
+		@apply h-2.5 w-2.5 rounded-full bg-neutral-500/80 transition;
 	}
 
 	.simple-lead-testimonial__dot.is-active {
-		@apply bg-primary-600;
+		background: rgba(0, 96, 82, 0.1);
+	}
+
+	.simple-lead-testimonial__dot.is-active::before {
+		@apply bg-primary-700;
 	}
 
 	@media (max-width: 640px) {
