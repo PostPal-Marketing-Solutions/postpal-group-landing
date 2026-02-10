@@ -4,12 +4,20 @@ import path from 'node:path'
 const strictNoindex = process.env.SEO_CHECK_STRICT_NOINDEX !== 'false'
 const noindexMeta = '<meta name="robots" content="noindex,nofollow"'
 const baseUrl = process.env.SEO_CHECK_BASE_URL || 'http://localhost:4321'
-const distClientDir = path.resolve('dist/client')
 const explicitMode = (process.env.SEO_CHECK_MODE || '').trim().toLowerCase()
-const mode = explicitMode === 'http' || explicitMode === 'file' ? explicitMode : process.env.VERCEL || process.env.CI ? 'file' : 'http'
+const mode = explicitMode === 'http' || explicitMode === 'source' ? explicitMode : process.env.VERCEL || process.env.CI ? 'source' : 'http'
 
 const mustIndexRoutes = ['/', '/reporting-playbook/', '/legal/impressum/', '/legal/datenschutz/']
 const mustNoindexRoutes = ['/reporting-beispiele/', '/reporting-playbook-gsap/']
+
+const routeToSourceFile = {
+	'/': 'src/pages/index.astro',
+	'/reporting-playbook/': 'src/pages/reporting-playbook.astro',
+	'/legal/impressum/': 'src/pages/legal/impressum.astro',
+	'/legal/datenschutz/': 'src/pages/legal/datenschutz.astro',
+	'/reporting-beispiele/': 'src/pages/reporting-beispiele.astro',
+	'/reporting-playbook-gsap/': 'src/pages/reporting-playbook-gsap.astro'
+}
 
 const normalizeBaseUrl = (input) => {
 	try {
@@ -62,19 +70,26 @@ async function checkRoute(base, route, expectedNoindex) {
 	}
 }
 
-const routeToDistFile = (route) => {
-	if (route === '/') {
-		return path.join(distClientDir, 'index.html')
+async function checkRouteFromSource(route, expectedNoindex) {
+	const sourcePath = routeToSourceFile[route]
+	if (!sourcePath) {
+		return {
+			route,
+			targetUrl: 'unknown',
+			expectedNoindex,
+			hasNoindex: null,
+			pass: false,
+			error: `No source mapping configured for route: ${route}`
+		}
 	}
-	return path.join(distClientDir, route.replace(/^\//, ''), 'index.html')
-}
 
-async function checkRouteFromFile(route, expectedNoindex) {
-	const filePath = routeToDistFile(route)
+	const filePath = path.resolve(sourcePath)
 
 	try {
-		const html = await readFile(filePath, 'utf8')
-		const hasNoindex = html.includes(noindexMeta)
+		const source = await readFile(filePath, 'utf8')
+		const hasNoindexProp = /noindex\s*=\s*\{?\s*true\s*\}?/i.test(source)
+		const hasNoindexMeta = /<meta[^>]+name=["']robots["'][^>]*content=["'][^"']*noindex,nofollow/i.test(source)
+		const hasNoindex = hasNoindexProp || hasNoindexMeta || source.includes(noindexMeta)
 		const pass = expectedNoindex ? hasNoindex : !hasNoindex
 
 		return {
@@ -98,7 +113,7 @@ async function checkRouteFromFile(route, expectedNoindex) {
 }
 
 async function main() {
-	if (mode !== 'http' && mode !== 'file') {
+	if (mode !== 'http' && mode !== 'source') {
 		throw new Error(`Invalid SEO_CHECK_MODE: ${mode}`)
 	}
 
@@ -109,7 +124,7 @@ async function main() {
 		results.push(
 			mode === 'http'
 				? await checkRoute(normalizedBase, route, false)
-				: await checkRouteFromFile(route, false)
+				: await checkRouteFromSource(route, false)
 		)
 	}
 
@@ -118,7 +133,7 @@ async function main() {
 			results.push(
 				mode === 'http'
 					? await checkRoute(normalizedBase, route, true)
-					: await checkRouteFromFile(route, true)
+					: await checkRouteFromSource(route, true)
 			)
 		}
 	}
