@@ -1,6 +1,12 @@
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+
 const strictNoindex = process.env.SEO_CHECK_STRICT_NOINDEX !== 'false'
 const noindexMeta = '<meta name="robots" content="noindex,nofollow"'
 const baseUrl = process.env.SEO_CHECK_BASE_URL || 'http://localhost:4321'
+const distClientDir = path.resolve('dist/client')
+const explicitMode = (process.env.SEO_CHECK_MODE || '').trim().toLowerCase()
+const mode = explicitMode === 'http' || explicitMode === 'file' ? explicitMode : process.env.VERCEL || process.env.CI ? 'file' : 'http'
 
 const mustIndexRoutes = ['/', '/reporting-playbook/', '/legal/impressum/', '/legal/datenschutz/']
 const mustNoindexRoutes = ['/reporting-beispiele/', '/reporting-playbook-gsap/']
@@ -56,17 +62,64 @@ async function checkRoute(base, route, expectedNoindex) {
 	}
 }
 
+const routeToDistFile = (route) => {
+	if (route === '/') {
+		return path.join(distClientDir, 'index.html')
+	}
+	return path.join(distClientDir, route.replace(/^\//, ''), 'index.html')
+}
+
+async function checkRouteFromFile(route, expectedNoindex) {
+	const filePath = routeToDistFile(route)
+
+	try {
+		const html = await readFile(filePath, 'utf8')
+		const hasNoindex = html.includes(noindexMeta)
+		const pass = expectedNoindex ? hasNoindex : !hasNoindex
+
+		return {
+			route,
+			targetUrl: filePath,
+			expectedNoindex,
+			hasNoindex,
+			pass,
+			error: null
+		}
+	} catch (error) {
+		return {
+			route,
+			targetUrl: filePath,
+			expectedNoindex,
+			hasNoindex: null,
+			pass: false,
+			error: error instanceof Error ? error.message : 'Unable to read file'
+		}
+	}
+}
+
 async function main() {
-	const normalizedBase = normalizeBaseUrl(baseUrl)
+	if (mode !== 'http' && mode !== 'file') {
+		throw new Error(`Invalid SEO_CHECK_MODE: ${mode}`)
+	}
+
+	const normalizedBase = mode === 'http' ? normalizeBaseUrl(baseUrl) : null
 	const results = []
 
 	for (const route of mustIndexRoutes) {
-		results.push(await checkRoute(normalizedBase, route, false))
+		results.push(
+			mode === 'http'
+				? await checkRoute(normalizedBase, route, false)
+				: await checkRouteFromFile(route, false)
+		)
 	}
 
 	if (strictNoindex) {
 		for (const route of mustNoindexRoutes) {
-			results.push(await checkRoute(normalizedBase, route, true))
+			results.push(
+				mode === 'http'
+					? await checkRoute(normalizedBase, route, true)
+					: await checkRouteFromFile(route, true)
+			)
 		}
 	}
 
@@ -98,11 +151,17 @@ async function main() {
 	if (!strictNoindex) {
 		console.log('[INFO] Strict noindex checks are disabled (SEO_CHECK_STRICT_NOINDEX=false).')
 	}
+	console.log(`[INFO] SEO check mode: ${mode}`)
 	console.log('[OK] SEO indexing policy checks passed.')
 }
 
 main().catch((error) => {
 	console.error('[ERROR] SEO indexing policy check failed.', error)
+	if (mode !== 'http') {
+		process.exitCode = 1
+		return
+	}
+
 	const connectionErrorCode = error?.cause?.code
 	const isFetchConnectionFailure =
 		connectionErrorCode === 'ECONNREFUSED' ||
