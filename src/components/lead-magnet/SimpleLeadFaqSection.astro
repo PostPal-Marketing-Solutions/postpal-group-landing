@@ -68,7 +68,9 @@ const faqItems = [
 </section>
 
 <script is:inline>
+	const root = document.querySelector('[data-lead-magnet-root]')
 	const isGsapVariant = Boolean(document.querySelector('[data-lead-magnet-gsap]'))
+	const isPerformanceMode = root?.dataset.performanceMode === 'true'
 	const FAQ_TRANSITION_MS = 260
 
 	const interactiveSelector = 'a, button, input, textarea, select, [role="button"]'
@@ -139,8 +141,13 @@ const faqItems = [
 
 		if (!panel) return
 
+		if (isPerformanceMode && !isGsapVariant) {
+			panel.hidden = expanded
+			return
+		}
+
 		if (!isGsapVariant) {
-			panel.toggleAttribute('hidden', expanded)
+			panel.hidden = expanded
 			return
 		}
 
@@ -208,6 +215,11 @@ const faqItems = [
 
 	.simple-lead-faq__chevron svg {
 		@apply h-5 w-5;
+	}
+
+	:global([data-performance-mode='true']) .simple-lead-faq__item,
+	:global([data-performance-mode='true']) .simple-lead-faq__chevron {
+		transition: none;
 	}
 
 	.simple-lead-faq__trigger[aria-expanded='false'] .simple-lead-faq__chevron {

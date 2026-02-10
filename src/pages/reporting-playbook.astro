@@ -1,5 +1,5 @@
 ---
-import LeadMagnetLayout from '../layouts/LeadMagnetLayout.astro'
+import LeadMagnetPerformanceLayout from '../layouts/LeadMagnetPerformanceLayout.astro'
 import SimpleLeadHero from '../components/lead-magnet/SimpleLeadHero.astro'
 import SimpleLeadStatsStrip from '../components/lead-magnet/SimpleLeadStatsStrip.astro'
 import SimpleLeadLogoStrip from '../components/lead-magnet/SimpleLeadLogoStrip.astro'
@@ -24,16 +24,18 @@ const SEO = {
 }
 ---
 
-<LeadMagnetLayout
+<LeadMagnetPerformanceLayout
 	title={SEO.title}
 	description={SEO.description}
 	ogImage={SEO.ogImage}
 	canonicalUrl="/reporting-playbook/"
 	enableTracking={true}
+	preloadImageHref={previewImage.src}
 >
 	<article
 		class="hero-only"
 		data-lead-magnet-root
+		data-performance-mode="true"
 		data-events={JSON.stringify(LEAD_MAGNET_EVENTS)}
 		data-asset={JSON.stringify(REPORTING_EXAMPLE_ASSET)}
 		data-known-lead-tokens={JSON.stringify(KNOWN_LEAD_TOKENS)}
@@ -57,4 +59,4 @@ const SEO = {
 		import { initLeadMagnetPrototype } from '../scripts/leadMagnetPrototype'
 		initLeadMagnetPrototype('[data-lead-magnet-root]')
 	</script>
-</LeadMagnetLayout>
+</LeadMagnetPerformanceLayout>

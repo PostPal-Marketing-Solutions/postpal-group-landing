@@ -36,13 +36,13 @@ const {
 		<div class="simple-lead-pdf-preview__scroll" data-pdf-slider>
 			<article class="simple-lead-pdf-preview__card">
 				<p class="simple-lead-pdf-preview__label">{pageOneLabel}</p>
-				<div class="simple-lead-pdf-preview__embed-wrap">
-					<iframe
-						src={`${pagePreviewOne}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=Fit`}
-						title="Beispielseite 1 aus dem Playbook"
-						class="simple-lead-pdf-preview__embed"
-						loading="lazy"
-					></iframe>
+					<div class="simple-lead-pdf-preview__embed-wrap">
+						<iframe
+							data-src={`${pagePreviewOne}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=Fit`}
+							title="Beispielseite 1 aus dem Playbook"
+							class="simple-lead-pdf-preview__embed"
+							loading="lazy"
+						></iframe>
 				</div>
 			</article>
 
@@ -118,6 +118,8 @@ const {
 	const pdfSections = Array.from(document.querySelectorAll('.simple-lead-pdf-preview'))
 
 	pdfSections.forEach((section) => {
+		const root = section.closest('[data-lead-magnet-root]')
+		const isPerformanceMode = root?.dataset.performanceMode === 'true'
 		const slider = section.querySelector('[data-pdf-slider]')
 		if (!(slider instanceof HTMLElement)) return
 
@@ -127,14 +129,34 @@ const {
 		const dots = Array.from(section.querySelectorAll('[data-pdf-dot]'))
 		const frames = Array.from(slider.querySelectorAll('iframe.simple-lead-pdf-preview__embed'))
 		let activeIndex = 0
+		let didInit = false
 
 		const ensureFrameLoaded = (index) => {
 			const frame = frames[index]
 			if (!(frame instanceof HTMLIFrameElement)) return
-			if (frame.src && frame.src !== 'about:blank') return
+			if (frame.getAttribute('src')) return
 			const deferredSrc = frame.dataset.src
 			if (!deferredSrc) return
-			frame.src = deferredSrc
+			frame.setAttribute('src', deferredSrc)
+		}
+
+		const setActive = (index, { loadFrame = false } = {}) => {
+			if (!cards.length || !dots.length) return
+			const bounded = Math.max(0, Math.min(index, cards.length - 1))
+			activeIndex = bounded
+
+			if (loadFrame) {
+				ensureFrameLoaded(activeIndex)
+			}
+
+			dots.forEach((dot, dotIndex) => {
+				dot.classList.toggle('is-active', dotIndex === activeIndex)
+				dot.setAttribute('aria-current', dotIndex === activeIndex ? 'true' : 'false')
+			})
+
+			cards.forEach((card, cardIndex) => {
+				card.classList.toggle('is-active', cardIndex === activeIndex)
+			})
 		}
 
 		const goTo = (index) => {
@@ -145,47 +167,73 @@ const {
 			target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
 		}
 
-		const updateActiveState = () => {
-			if (!cards.length || !dots.length) return
-			const viewportCenter = slider.scrollLeft + slider.clientWidth / 2
-			let closestIndex = 0
-			let minDistance = Number.POSITIVE_INFINITY
+		const initializeSlider = () => {
+			if (didInit) return
+			didInit = true
+			setActive(0, { loadFrame: true })
 
-			cards.forEach((card, index) => {
-				const cardCenter = card.offsetLeft + card.clientWidth / 2
-				const distance = Math.abs(cardCenter - viewportCenter)
-				if (distance < minDistance) {
-					minDistance = distance
-					closestIndex = index
+			prev?.addEventListener('click', () => goTo(activeIndex - 1))
+			next?.addEventListener('click', () => goTo(activeIndex + 1))
+
+			dots.forEach((dot) => {
+				dot.addEventListener('click', () => {
+					const index = Number(dot.getAttribute('data-pdf-dot') || '0')
+					goTo(index)
+				})
+			})
+
+			if (cards.length < 2) return
+
+			const visibilityObserver = new IntersectionObserver(
+				(entries) => {
+					let bestIndex = activeIndex
+					let bestRatio = 0
+
+					entries.forEach((entry) => {
+						if (!(entry.target instanceof HTMLElement)) return
+						const index = cards.indexOf(entry.target)
+						if (index < 0) return
+						if (entry.intersectionRatio > bestRatio) {
+							bestRatio = entry.intersectionRatio
+							bestIndex = index
+						}
+					})
+
+					if (bestRatio > 0) {
+						setActive(bestIndex, { loadFrame: true })
+					}
+				},
+				{
+					root: slider,
+					threshold: [0.45, 0.6, 0.75]
 				}
-			})
+			)
 
-			activeIndex = closestIndex
-			ensureFrameLoaded(activeIndex)
-
-			dots.forEach((dot, index) => {
-				dot.classList.toggle('is-active', index === activeIndex)
-				dot.setAttribute('aria-current', index === activeIndex ? 'true' : 'false')
-			})
-
-			cards.forEach((card, index) => {
-				card.classList.toggle('is-active', index === activeIndex)
+			cards.forEach((card) => {
+				visibilityObserver.observe(card)
 			})
 		}
 
-		prev?.addEventListener('click', () => goTo(activeIndex - 1))
-		next?.addEventListener('click', () => goTo(activeIndex + 1))
+		if (!isPerformanceMode) {
+			initializeSlider()
+			return
+		}
 
-		dots.forEach((dot) => {
-			dot.addEventListener('click', () => {
-				const index = Number(dot.getAttribute('data-pdf-dot') || '0')
-				goTo(index)
-			})
-		})
+		const sectionObserver = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((entry) => entry.isIntersecting)) {
+					initializeSlider()
+					sectionObserver.disconnect()
+				}
+			},
+			{
+				root: null,
+				rootMargin: '260px 0px',
+				threshold: 0.01
+			}
+		)
 
-		slider.addEventListener('scroll', updateActiveState, { passive: true })
-		ensureFrameLoaded(0)
-		updateActiveState()
+		sectionObserver.observe(section)
 	})
 </script>
 
@@ -258,6 +306,13 @@ const {
 		background: #f8f9f9;
 		width: calc(100% - 0.25rem);
 		transition: border-color 200ms ease;
+	}
+
+	:global([data-performance-mode='true']) .simple-lead-pdf-preview__controls button,
+	:global([data-performance-mode='true']) .simple-lead-pdf-preview__card,
+	:global([data-performance-mode='true']) .simple-lead-pdf-preview__dot,
+	:global([data-performance-mode='true']) .simple-lead-pdf-preview__dot::before {
+		transition: none;
 	}
 
 	.simple-lead-pdf-preview__card.is-active {

@@ -20,6 +20,8 @@ type Props = {
 	canonicalUrl?: string
 	noindex?: boolean
 	enableTracking?: boolean
+	trackingMode?: 'immediate' | 'deferred'
+	preloadImageHref?: string
 }
 // Page Metadata
 const {
@@ -29,13 +31,88 @@ const {
 	canonical = configData.canonical,
 	canonicalUrl,
 	noindex = configData.noindex,
-	enableTracking = true
+	enableTracking = true,
+	trackingMode = 'immediate',
+	preloadImageHref
 } = Astro.props
+
+const shouldLoadTrackingImmediately = enableTracking && trackingMode === 'immediate'
+const shouldLoadTrackingDeferred = enableTracking && trackingMode === 'deferred'
 ---
 
 <head>
-	{enableTracking && googleAnalyticsMeasurementID && <GoogleAnalytics />}
-	{enableTracking && googleTagManagerID && <GoogleTagManagerHead />}
+	{shouldLoadTrackingImmediately && googleAnalyticsMeasurementID && <GoogleAnalytics />}
+	{shouldLoadTrackingImmediately && googleTagManagerID && <GoogleTagManagerHead />}
+	{
+		shouldLoadTrackingDeferred && (googleAnalyticsMeasurementID || googleTagManagerID) && (
+			<script is:inline define:vars={{ googleAnalyticsMeasurementID, googleTagManagerID }}>
+				window.dataLayer = window.dataLayer || []
+
+				;(() => {
+					if (window.__postpalTrackingBootstrapReady) {
+						return
+					}
+
+					window.__postpalTrackingBootstrapReady = true
+
+					const createScript = (src) => {
+						const script = document.createElement('script')
+						script.async = true
+						script.src = src
+						document.head.appendChild(script)
+					}
+
+					const loadTracking = () => {
+						if (window.__postpalTrackingLoaded) {
+							return
+						}
+
+						window.__postpalTrackingLoaded = true
+
+						if (googleTagManagerID) {
+							window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+							createScript(`https://www.googletagmanager.com/gtm.js?id=${googleTagManagerID}`)
+						}
+
+						if (googleAnalyticsMeasurementID) {
+							window.gtag =
+								window.gtag ||
+								function () {
+									window.dataLayer.push(arguments)
+								}
+
+							window.gtag('js', new Date())
+							window.gtag('config', googleAnalyticsMeasurementID)
+							createScript(
+								`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsMeasurementID}`
+							)
+						}
+					}
+
+					const triggerEvents = ['pointerdown', 'touchstart', 'keydown', 'scroll']
+					const onTrigger = () => {
+						loadTracking()
+						triggerEvents.forEach((eventName) => {
+							window.removeEventListener(eventName, onTrigger)
+						})
+					}
+
+					triggerEvents.forEach((eventName) => {
+						window.addEventListener(eventName, onTrigger, {
+							once: true,
+							passive: eventName !== 'keydown'
+						})
+					})
+
+					if ('requestIdleCallback' in window) {
+						window.requestIdleCallback(() => loadTracking(), { timeout: 1800 })
+					} else {
+						setTimeout(loadTracking, 1800)
+					}
+				})()
+			</script>
+		)
+	}
 	<GoogleSearchConsole />
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,6 +126,7 @@ const {
 	/>
 	<link rel="icon" href="/favicon.png" type="image/png" />
 	<link rel="sitemap" href="/sitemap-index.xml" />
+	{preloadImageHref && <link rel="preload" as="image" href={preloadImageHref} />}
 	<meta name="generator" content={Astro.generator} />
 	<meta name="theme-color" content="#134e4a" />
 </head>

@@ -108,7 +108,7 @@ export const initLeadMagnetPrototype = (rootSelector: string) => {
 	const invalidKnownLinkNotice = root.querySelector<HTMLElement>('[data-invalid-known-link]')
 	if (invalidKnownLinkNotice) {
 		const hasInvalidKnownState = requestedState === 'known' && !hasValidKnownLink
-		invalidKnownLinkNotice.classList.toggle('hidden', !hasInvalidKnownState)
+		invalidKnownLinkNotice.hidden = !hasInvalidKnownState
 	}
 
 	const knownGreeting = root.querySelector<HTMLElement>('[data-known-greeting]')

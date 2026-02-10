@@ -89,13 +89,37 @@ const { testimonials = defaultTestimonials } = Astro.props
 </section>
 
 <script is:inline>
-	const container = document.querySelector('[data-testimonial-slider]')
-	if (container) {
-		const prev = document.querySelector('[data-slide-prev]')
-		const next = document.querySelector('[data-slide-next]')
+	const testimonialSections = Array.from(document.querySelectorAll('.simple-lead-testimonial-band'))
+
+	testimonialSections.forEach((section) => {
+		const root = section.closest('[data-lead-magnet-root]')
+		const isPerformanceMode = root?.dataset.performanceMode === 'true'
+		const container = section.querySelector('[data-testimonial-slider]')
+		if (!(container instanceof HTMLElement)) {
+			return
+		}
+
+		const prev = section.querySelector('[data-slide-prev]')
+		const next = section.querySelector('[data-slide-next]')
 		const cards = Array.from(container.querySelectorAll('.simple-lead-testimonial__card'))
-		const dots = Array.from(document.querySelectorAll('[data-slide-dot]'))
+		const dots = Array.from(section.querySelectorAll('[data-slide-dot]'))
 		let activeIndex = 0
+		let didInit = false
+
+		const setActive = (index) => {
+			if (!cards.length || !dots.length) return
+			const bounded = Math.max(0, Math.min(index, cards.length - 1))
+			activeIndex = bounded
+
+			dots.forEach((dot, dotIndex) => {
+				dot.classList.toggle('is-active', dotIndex === activeIndex)
+				dot.setAttribute('aria-current', dotIndex === activeIndex ? 'true' : 'false')
+			})
+
+			cards.forEach((card, cardIndex) => {
+				card.classList.toggle('is-active', cardIndex === activeIndex)
+			})
+		}
 
 		const goTo = (index) => {
 			if (!cards.length) return
@@ -104,48 +128,74 @@ const { testimonials = defaultTestimonials } = Astro.props
 			target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
 		}
 
-		const updateActiveDot = () => {
-			if (!cards.length || !dots.length) return
-			const viewportCenter = container.scrollLeft + container.clientWidth / 2
-			let closestIndex = 0
-			let minDistance = Number.POSITIVE_INFINITY
+		const initializeSlider = () => {
+			if (didInit) return
+			didInit = true
+			setActive(0)
 
-			cards.forEach((card, index) => {
-				const cardCenter = card.offsetLeft + card.clientWidth / 2
-				const distance = Math.abs(cardCenter - viewportCenter)
-				if (distance < minDistance) {
-					minDistance = distance
-					closestIndex = index
+			prev?.addEventListener('click', () => goTo(activeIndex - 1))
+			next?.addEventListener('click', () => goTo(activeIndex + 1))
+
+			dots.forEach((dot) => {
+				dot.addEventListener('click', () => {
+					const index = Number(dot.getAttribute('data-slide-dot') || '0')
+					goTo(index)
+				})
+			})
+
+			if (cards.length < 2) return
+
+			const visibilityObserver = new IntersectionObserver(
+				(entries) => {
+					let bestIndex = activeIndex
+					let bestRatio = 0
+
+					entries.forEach((entry) => {
+						if (!(entry.target instanceof HTMLElement)) return
+						const index = cards.indexOf(entry.target)
+						if (index < 0) return
+						if (entry.intersectionRatio > bestRatio) {
+							bestRatio = entry.intersectionRatio
+							bestIndex = index
+						}
+					})
+
+					if (bestRatio > 0) {
+						setActive(bestIndex)
+					}
+				},
+				{
+					root: container,
+					threshold: [0.45, 0.6, 0.75]
 				}
-			})
+			)
 
-			if (closestIndex !== activeIndex) {
-				activeIndex = closestIndex
-			}
-
-			dots.forEach((dot, index) => {
-				dot.classList.toggle('is-active', index === activeIndex)
-				dot.setAttribute('aria-current', index === activeIndex ? 'true' : 'false')
-			})
-
-			cards.forEach((card, index) => {
-				card.classList.toggle('is-active', index === activeIndex)
+			cards.forEach((card) => {
+				visibilityObserver.observe(card)
 			})
 		}
 
-		prev?.addEventListener('click', () => goTo(activeIndex - 1))
-		next?.addEventListener('click', () => goTo(activeIndex + 1))
+		if (!isPerformanceMode) {
+			initializeSlider()
+			return
+		}
 
-		dots.forEach((dot) => {
-			dot.addEventListener('click', () => {
-				const index = Number(dot.getAttribute('data-slide-dot') || '0')
-				goTo(index)
-			})
-		})
+		const sectionObserver = new IntersectionObserver(
+			(entries) => {
+				if (entries.some((entry) => entry.isIntersecting)) {
+					initializeSlider()
+					sectionObserver.disconnect()
+				}
+			},
+			{
+				root: null,
+				rootMargin: '220px 0px',
+				threshold: 0.01
+			}
+		)
 
-		container.addEventListener('scroll', updateActiveDot, { passive: true })
-		updateActiveDot()
-	}
+		sectionObserver.observe(section)
+	})
 </script>
 
 <style>
@@ -255,6 +305,12 @@ const { testimonials = defaultTestimonials } = Astro.props
 	.simple-lead-testimonial__dot::before {
 		content: '';
 		@apply h-2.5 w-2.5 rounded-full bg-neutral-500/80 transition;
+	}
+
+	:global([data-performance-mode='true']) .simple-lead-testimonial__controls button,
+	:global([data-performance-mode='true']) .simple-lead-testimonial__dot,
+	:global([data-performance-mode='true']) .simple-lead-testimonial__dot::before {
+		transition: none;
 	}
 
 	.simple-lead-testimonial__dot.is-active {
