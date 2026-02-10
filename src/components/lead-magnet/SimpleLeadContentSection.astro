@@ -1,0 +1,90 @@
+---
+import { REPORTING_CONTENT_MODULES } from '../../config/leadMagnetReportingExample'
+---
+
+<section class="simple-lead-section">
+	<div class="simple-lead-section__header">
+		<h2>Was du im Playbook konkret bekommst</h2>
+	</div>
+
+	<ul class="simple-lead-module-grid">
+		{
+			REPORTING_CONTENT_MODULES.map((item, index) => (
+				<li class="simple-lead-module">
+					<span class="simple-lead-module__index">{String(index + 1).padStart(2, '0')}</span>
+					<p>{item}</p>
+				</li>
+			))
+		}
+	</ul>
+
+	<aside class="simple-lead-insight">
+		<h3>Vorher / Nachher im Alltag</h3>
+		<p class="simple-lead-insight__before">
+			<strong>Vorher:</strong> Print wird als Einzelaktion oder Rabattkanal genutzt, ohne klare Segmentlogik.
+		</p>
+		<p>
+			<strong>Nachher:</strong> Du arbeitest mit klaren Kampagnentypen, RFM-Segmentierung und praxisbewährten
+			Offers für planbare Retention-Ergebnisse.
+		</p>
+	</aside>
+</section>
+
+<style>
+	.simple-lead-section {
+		@apply mx-auto mt-8 w-full max-w-6xl rounded-3xl border border-neutral-200/80 p-5 sm:p-6 lg:p-10;
+		background: #f8f9f9;
+	}
+
+	.simple-lead-section__header h2 {
+		@apply mb-0 text-3xl font-semibold text-neutral-900;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-module-grid {
+		@apply mt-6 grid gap-3 md:mt-7 md:grid-cols-2 md:gap-4;
+	}
+
+	.simple-lead-module {
+		@apply flex items-start gap-3 rounded-2xl border border-neutral-200/60 bg-neutral-50/80 p-4;
+	}
+
+	.simple-lead-module__index {
+		@apply inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-semibold text-white;
+	}
+
+	.simple-lead-module p {
+		@apply mb-0 text-sm leading-relaxed text-neutral-700 sm:text-[0.97rem];
+	}
+
+	.simple-lead-insight {
+		@apply mt-7 rounded-2xl border border-primary-200/80 bg-primary-50/60 p-5;
+	}
+
+	.simple-lead-insight h3 {
+		@apply mb-2 text-xl font-semibold leading-tight text-primary-900;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-insight p {
+		@apply mb-2 text-sm leading-relaxed text-primary-900/90;
+	}
+
+	.simple-lead-insight__before {
+		@apply mb-1;
+	}
+
+	@media (max-width: 640px) {
+		.simple-lead-section {
+			@apply mt-6 rounded-2xl p-5;
+		}
+
+		.simple-lead-section__header h2 {
+			@apply text-2xl leading-tight;
+		}
+
+		.simple-lead-insight {
+			@apply p-4;
+		}
+	}
+</style>

@@ -1,0 +1,83 @@
+---
+type Props = {
+	quote?: string
+	company?: string
+	authorName?: string
+	authorRole?: string
+	ariaLabel?: string
+}
+
+const {
+	quote = 'PostPal erreicht Kund:innen dort, wo sie nicht von Werbung geflutet werden: personalisiert, offline, im eigenen Briefkasten. So können wir regelmäßig Kund:innen reaktivieren, die wir ansonsten verloren hätten.',
+	company = 'Head of CRM bei Vetain GmbH',
+	authorName = 'Pauline-Edda',
+	authorRole = '',
+	ariaLabel = 'Kundenzitat'
+} = Astro.props
+---
+
+<section class="simple-lead-quote" aria-label={ariaLabel}>
+	<div class="simple-lead-quote__inner">
+		<blockquote class="simple-lead-quote__text">"{quote}"</blockquote>
+		<div class="simple-lead-quote__attribution">
+			<p class="simple-lead-quote__company">{company}</p>
+			<p class="simple-lead-quote__author">{authorName}</p>
+			{authorRole && <p class="simple-lead-quote__role">{authorRole}</p>}
+		</div>
+	</div>
+</section>
+
+<style>
+	.simple-lead-quote {
+		@apply mx-auto mt-8 w-full max-w-6xl px-5 py-10 sm:px-8 sm:py-12 lg:px-12;
+		background: transparent;
+		border: 0;
+	}
+
+	.simple-lead-quote__inner {
+		@apply mx-auto max-w-4xl text-center;
+	}
+
+	.simple-lead-quote__text {
+		@apply m-0 text-pretty text-2xl leading-tight text-neutral-900 sm:text-3xl lg:text-5xl;
+		font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+		font-weight: 500;
+	}
+
+	.simple-lead-quote__attribution {
+		@apply mt-8;
+	}
+
+	.simple-lead-quote__company {
+		@apply m-0 text-2xl font-semibold leading-tight text-neutral-900 sm:text-3xl;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-quote__author {
+		@apply mb-0 mt-3 text-xl font-semibold text-neutral-900 sm:text-2xl;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-quote__role {
+		@apply m-0 text-lg text-neutral-500 sm:text-xl;
+	}
+
+	@media (max-width: 640px) {
+		.simple-lead-quote {
+			@apply mt-6 rounded-2xl px-5 py-9;
+		}
+
+		.simple-lead-quote__text {
+			@apply text-xl leading-snug;
+		}
+
+		.simple-lead-quote__company {
+			@apply text-2xl;
+		}
+
+		.simple-lead-quote__author,
+		.simple-lead-quote__role {
+			@apply text-lg;
+		}
+	}
+</style>

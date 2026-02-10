@@ -1,0 +1,60 @@
+---
+import LeadMagnetLayout from '../layouts/LeadMagnetLayout.astro'
+import SimpleLeadHero from '../components/lead-magnet/SimpleLeadHero.astro'
+import SimpleLeadStatsStrip from '../components/lead-magnet/SimpleLeadStatsStrip.astro'
+import SimpleLeadLogoStrip from '../components/lead-magnet/SimpleLeadLogoStrip.astro'
+import SimpleLeadContentSection from '../components/lead-magnet/SimpleLeadContentSection.astro'
+import SimpleLeadTestimonial from '../components/lead-magnet/SimpleLeadTestimonial.astro'
+import SimpleLeadPdfPreviewSection from '../components/lead-magnet/SimpleLeadPdfPreviewSection.astro'
+import SimpleLeadQuoteEndorsement from '../components/lead-magnet/SimpleLeadQuoteEndorsement.astro'
+import SimpleLeadFaqSection from '../components/lead-magnet/SimpleLeadFaqSection.astro'
+import SimpleLeadAppPromo from '../components/lead-magnet/SimpleLeadAppPromo.astro'
+import previewImage from '../assets/hero-book-mockup.png'
+import {
+	KNOWN_LEAD_TOKENS,
+	LEAD_MAGNET_EVENTS,
+	REPORTING_EXAMPLE_ASSET
+} from '../config/leadMagnetReportingExample'
+
+const SEO = {
+	title: 'CRM Print-Mailing Playbook 2026 kostenlos herunterladen | PostPal',
+	description:
+		'Lerne, wie du mit 9 praxiserprobten Print-Mailing-Kampagnen für D2C mehr Wiederkäufe erzielst. Kostenloses 24-Seiten Playbook inklusive RFM-Framework.',
+	ogImage: previewImage.src
+}
+---
+
+<LeadMagnetLayout
+	title={SEO.title}
+	description={SEO.description}
+	ogImage={SEO.ogImage}
+	canonicalUrl="/reporting-playbook/"
+	enableTracking={true}
+>
+	<article
+		class="hero-only"
+		data-lead-magnet-root
+		data-events={JSON.stringify(LEAD_MAGNET_EVENTS)}
+		data-asset={JSON.stringify(REPORTING_EXAMPLE_ASSET)}
+		data-known-lead-tokens={JSON.stringify(KNOWN_LEAD_TOKENS)}
+	>
+		<SimpleLeadHero
+			previewImage={previewImage}
+			downloadUrl={REPORTING_EXAMPLE_ASSET.downloadUrl}
+			mediaStyle="image-only"
+		/>
+		<SimpleLeadLogoStrip />
+		<SimpleLeadStatsStrip />
+		<SimpleLeadContentSection />
+		<SimpleLeadTestimonial />
+		<SimpleLeadPdfPreviewSection downloadUrl={REPORTING_EXAMPLE_ASSET.downloadUrl} />
+		<SimpleLeadQuoteEndorsement />
+		<SimpleLeadFaqSection />
+		<SimpleLeadAppPromo />
+	</article>
+
+	<script>
+		import { initLeadMagnetPrototype } from '../scripts/leadMagnetPrototype'
+		initLeadMagnetPrototype('[data-lead-magnet-root]')
+	</script>
+</LeadMagnetLayout>

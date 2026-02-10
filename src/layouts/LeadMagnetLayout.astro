@@ -1,0 +1,138 @@
+---
+// Lead magnet layout
+// ------------
+// Description: Focused layout for dedicated lead magnet pages with logo-only top navigation.
+
+import { Image } from 'astro:assets'
+import Header from '../components/blocks/head/Header.astro'
+import GoogleTagManagerBody from '../components/scripts/googleTagManagerBody.astro'
+
+// Styles
+import '../styles/global.css'
+
+// Fonts
+import '@fontsource/roboto/latin-400.css'
+import '@fontsource/roboto/latin-700.css'
+import '@fontsource-variable/outfit'
+import '@fontsource/covered-by-your-grace/400.css'
+
+// Assets
+import lightLogo from '../assets/logos/logo-transparent-dark.png'
+
+type Props = {
+	title?: string
+	description?: string
+	ogImage?: string
+	canonicalUrl?: string
+	noindex?: boolean
+	classes?: string
+	enableTracking?: boolean
+}
+
+const { title, description, ogImage, canonicalUrl, noindex, classes, enableTracking = false } = Astro.props
+---
+
+<!doctype html>
+<html lang="de" class="mode-light relative">
+	<Header
+		title={title}
+		description={description}
+		ogImage={ogImage}
+		canonicalUrl={canonicalUrl}
+		noindex={noindex}
+		enableTracking={enableTracking}
+	/>
+	<body class:list={['lead-layout', { [`${classes}`]: classes }]}>
+		{enableTracking && <GoogleTagManagerBody />}
+
+		<header class="lead-header">
+			<div class="lead-shell">
+				<a href="/" class="lead-brand" aria-label="Zur Startseite der PostPal Group">
+					<Image
+						src={lightLogo}
+						alt="PostPal Group"
+						width={250}
+						height={56}
+						class="lead-brand__img"
+						loading="eager"
+						decoding="async"
+					/>
+				</a>
+			</div>
+		</header>
+
+		<main class="lead-main">
+			<slot />
+		</main>
+
+		<footer class="lead-footer">
+			<div class="lead-shell">
+				<p>© PostPal Marketing Solutions GmbH 2026.</p>
+				<nav class="lead-footer__links" aria-label="Rechtliche Links">
+					<a href="/legal/impressum">Impressum</a>
+					<a href="/legal/datenschutz">Datenschutz</a>
+				</nav>
+			</div>
+		</footer>
+	</body>
+</html>
+
+<style>
+	.lead-layout {
+		@apply min-h-screen bg-neutral-50 text-neutral-700;
+		background:
+			radial-gradient(120% 140% at 10% -10%, rgba(249, 146, 29, 0.16) 0%, rgba(249, 146, 29, 0) 45%),
+			radial-gradient(130% 120% at 90% -10%, rgba(0, 107, 91, 0.18) 0%, rgba(0, 107, 91, 0) 42%),
+			#f8f9f9;
+	}
+
+	.lead-shell {
+		@apply mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 sm:gap-6 sm:px-6;
+	}
+
+	.lead-header {
+		@apply sticky top-0 z-20 border-b border-neutral-200/55 bg-white/85 py-3 backdrop-blur;
+	}
+
+	.lead-brand {
+		@apply inline-flex items-center;
+	}
+
+	.lead-brand__img {
+		@apply h-auto w-[148px] sm:w-[210px];
+	}
+
+	.lead-header__legal {
+		@apply text-base font-medium text-neutral-600 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 sm:text-sm;
+	}
+
+	.lead-main {
+		@apply pb-12 pt-6 lg:pt-12;
+	}
+
+	.lead-footer {
+		@apply border-t border-neutral-200/55 bg-white/80 py-8 text-sm text-neutral-600;
+	}
+
+	.lead-footer__links {
+		@apply flex items-center gap-5;
+	}
+
+	.lead-footer__links a {
+		@apply text-neutral-600 hover:text-primary-600;
+	}
+
+	@media (max-width: 640px) {
+		.lead-header {
+			@apply py-2.5;
+		}
+
+		.lead-footer .lead-shell {
+			@apply flex-col items-start gap-3;
+		}
+
+		.lead-footer__links {
+			@apply flex-wrap gap-4;
+		}
+	}
+</style>

@@ -4,8 +4,7 @@ import { googleTagManagerID } from '../../../src/config/analytics'
 ---
 
 <!-- Google Tag Manager -->
-<script type="text/partytown" data-gtm-measurement-id={googleTagManagerID} id="gtm-init">
-	const tagtId = document.getElementById('gtm-init').getAttribute('data-gtm-measurement-id')
+<script is:inline define:vars={{ googleTagManagerID }}>
 	;(function (w, d, s, l, i) {
 		w[l] = w[l] || []
 		w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
@@ -15,6 +14,6 @@ import { googleTagManagerID } from '../../../src/config/analytics'
 		j.async = true
 		j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl
 		f.parentNode.insertBefore(j, f)
-	})(window, document, 'script', 'dataLayer', tagtId)
+	})(window, document, 'script', 'dataLayer', googleTagManagerID)
 </script>
 <!-- End Google Tag Manager -->

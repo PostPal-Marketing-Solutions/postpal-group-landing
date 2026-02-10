@@ -1,0 +1,363 @@
+---
+import pagePreviewOne from '../../assets/page-one.pdf?url'
+import pagePreviewTwo from '../../assets/page-two.pdf?url'
+
+type Props = {
+	downloadUrl: string
+	title?: string
+	description?: string
+	pageOneLabel?: string
+	pageTwoLabel?: string
+}
+
+const {
+	downloadUrl,
+	title = 'Beispielseiten aus dem Playbook',
+	description = 'So bekommst du einen ersten Eindruck vom Aufbau, der inhaltlichen Tiefe und der visuellen Struktur.',
+	pageOneLabel = 'Beispielseite 01',
+	pageTwoLabel = 'Beispielseite 02'
+} = Astro.props
+---
+
+<section class="simple-lead-pdf-preview" aria-label="Beispielseiten aus dem Playbook">
+	<div class="simple-lead-pdf-preview__header">
+		<h2>{title}</h2>
+		<p>{description}</p>
+	</div>
+
+	<div class="simple-lead-pdf-preview__head">
+		<div class="simple-lead-pdf-preview__controls">
+			<button type="button" data-pdf-prev aria-label="Vorherige Seite">←</button>
+			<button type="button" data-pdf-next aria-label="Nächste Seite">→</button>
+		</div>
+	</div>
+
+	<div class="simple-lead-pdf-preview__viewport">
+		<div class="simple-lead-pdf-preview__scroll" data-pdf-slider>
+			<article class="simple-lead-pdf-preview__card">
+				<p class="simple-lead-pdf-preview__label">{pageOneLabel}</p>
+				<div class="simple-lead-pdf-preview__embed-wrap">
+					<iframe
+						src={`${pagePreviewOne}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=Fit`}
+						title="Beispielseite 1 aus dem Playbook"
+						class="simple-lead-pdf-preview__embed"
+						loading="lazy"
+					></iframe>
+				</div>
+			</article>
+
+			<article class="simple-lead-pdf-preview__card">
+				<p class="simple-lead-pdf-preview__label">{pageTwoLabel}</p>
+				<div class="simple-lead-pdf-preview__embed-wrap">
+					<iframe
+						data-src={`${pagePreviewTwo}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=Fit`}
+						title="Beispielseite 2 aus dem Playbook"
+						class="simple-lead-pdf-preview__embed"
+						loading="lazy"
+					></iframe>
+				</div>
+			</article>
+		</div>
+	</div>
+
+	<div class="simple-lead-pdf-preview__dots">
+		<button
+			type="button"
+			class="simple-lead-pdf-preview__dot"
+			data-pdf-dot="0"
+			aria-label="Zu Beispielseite 1"
+		></button>
+		<button
+			type="button"
+			class="simple-lead-pdf-preview__dot"
+			data-pdf-dot="1"
+			aria-label="Zu Beispielseite 2"
+		></button>
+	</div>
+
+	<div class="simple-lead-pdf-preview__capture">
+		<div data-state-block="gated">
+			<form class="simple-lead-pdf-preview__form" data-lead-form novalidate>
+				<input
+					type="email"
+					data-email-input
+					name="email"
+					placeholder="E-Mail-Adresse eingeben"
+					autocomplete="email"
+					required
+				/>
+				<button type="submit">Playbook herunterladen</button>
+			</form>
+
+			<label class="simple-lead-pdf-preview__consent" for="simple-lead-pdf-consent">
+				<input id="simple-lead-pdf-consent" data-consent-input type="checkbox" />
+				<span>
+					Ich stimme zu, den Newsletter mit CRM-Insights zu erhalten. Abmeldung jederzeit möglich.
+					Datenschutzkonform.
+				</span>
+			</label>
+		</div>
+
+		<div class="simple-lead-pdf-preview__actions" data-state-block="submitted" hidden>
+			<a href={downloadUrl} download data-track-download>Playbook herunterladen</a>
+			<a href="https://calendly.com/postpal-felix/postpal-kennenlernen" data-track-secondary>
+				15-min Kampagnen-Review buchen
+			</a>
+		</div>
+
+		<div class="simple-lead-pdf-preview__actions" data-state-block="known" hidden>
+			<a href={downloadUrl} download data-track-download>Playbook herunterladen</a>
+			<a href="https://calendly.com/postpal-felix/postpal-kennenlernen" data-track-secondary>
+				15-min Kampagnen-Review buchen
+			</a>
+		</div>
+	</div>
+</section>
+
+<script is:inline>
+	const pdfSections = Array.from(document.querySelectorAll('.simple-lead-pdf-preview'))
+
+	pdfSections.forEach((section) => {
+		const slider = section.querySelector('[data-pdf-slider]')
+		if (!(slider instanceof HTMLElement)) return
+
+		const prev = section.querySelector('[data-pdf-prev]')
+		const next = section.querySelector('[data-pdf-next]')
+		const cards = Array.from(slider.querySelectorAll('.simple-lead-pdf-preview__card'))
+		const dots = Array.from(section.querySelectorAll('[data-pdf-dot]'))
+		const frames = Array.from(slider.querySelectorAll('iframe.simple-lead-pdf-preview__embed'))
+		let activeIndex = 0
+
+		const ensureFrameLoaded = (index) => {
+			const frame = frames[index]
+			if (!(frame instanceof HTMLIFrameElement)) return
+			if (frame.src && frame.src !== 'about:blank') return
+			const deferredSrc = frame.dataset.src
+			if (!deferredSrc) return
+			frame.src = deferredSrc
+		}
+
+		const goTo = (index) => {
+			if (!cards.length) return
+			const bounded = Math.max(0, Math.min(index, cards.length - 1))
+			ensureFrameLoaded(bounded)
+			const target = cards[bounded]
+			target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+		}
+
+		const updateActiveState = () => {
+			if (!cards.length || !dots.length) return
+			const viewportCenter = slider.scrollLeft + slider.clientWidth / 2
+			let closestIndex = 0
+			let minDistance = Number.POSITIVE_INFINITY
+
+			cards.forEach((card, index) => {
+				const cardCenter = card.offsetLeft + card.clientWidth / 2
+				const distance = Math.abs(cardCenter - viewportCenter)
+				if (distance < minDistance) {
+					minDistance = distance
+					closestIndex = index
+				}
+			})
+
+			activeIndex = closestIndex
+			ensureFrameLoaded(activeIndex)
+
+			dots.forEach((dot, index) => {
+				dot.classList.toggle('is-active', index === activeIndex)
+				dot.setAttribute('aria-current', index === activeIndex ? 'true' : 'false')
+			})
+
+			cards.forEach((card, index) => {
+				card.classList.toggle('is-active', index === activeIndex)
+			})
+		}
+
+		prev?.addEventListener('click', () => goTo(activeIndex - 1))
+		next?.addEventListener('click', () => goTo(activeIndex + 1))
+
+		dots.forEach((dot) => {
+			dot.addEventListener('click', () => {
+				const index = Number(dot.getAttribute('data-pdf-dot') || '0')
+				goTo(index)
+			})
+		})
+
+		slider.addEventListener('scroll', updateActiveState, { passive: true })
+		ensureFrameLoaded(0)
+		updateActiveState()
+	})
+</script>
+
+<style>
+	.simple-lead-pdf-preview {
+		@apply mx-auto mt-8 w-full max-w-6xl rounded-3xl border border-neutral-200/80 p-5 sm:p-6 lg:p-10;
+		background: #f8f9f9;
+		box-shadow: none;
+		position: relative;
+		isolation: isolate;
+	}
+
+	.simple-lead-pdf-preview::before {
+		content: '';
+		position: absolute;
+		left: 50%;
+		top: -2.6rem;
+		bottom: -2.6rem;
+		width: 100vw;
+		transform: translateX(-50%);
+		z-index: -1;
+		pointer-events: none;
+		background:
+			radial-gradient(120% 140% at 10% -10%, rgba(249, 146, 29, 0.12) 0%, rgba(249, 146, 29, 0) 45%),
+			radial-gradient(130% 120% at 90% -10%, rgba(0, 107, 91, 0.14) 0%, rgba(0, 107, 91, 0) 42%),
+			#f8f9f9;
+	}
+
+	.simple-lead-pdf-preview__header {
+		@apply mb-6;
+	}
+
+	.simple-lead-pdf-preview__header h2 {
+		@apply mb-2 text-3xl font-semibold text-neutral-900;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-pdf-preview__header p {
+		@apply m-0 max-w-3xl text-base leading-relaxed text-neutral-600;
+	}
+
+	.simple-lead-pdf-preview__head {
+		@apply mb-4 flex items-center justify-end gap-4;
+	}
+
+	.simple-lead-pdf-preview__controls {
+		@apply flex items-center gap-2;
+	}
+
+	.simple-lead-pdf-preview__controls button {
+		@apply inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200/70 bg-white text-base font-semibold text-neutral-700 transition hover:bg-neutral-100;
+	}
+
+	.simple-lead-pdf-preview__viewport {
+		@apply relative;
+	}
+
+	.simple-lead-pdf-preview__scroll {
+		@apply flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2;
+		scroll-padding-left: 0.25rem;
+		scrollbar-width: none;
+	}
+
+	.simple-lead-pdf-preview__scroll::-webkit-scrollbar {
+		display: none;
+	}
+
+	.simple-lead-pdf-preview__card {
+		@apply shrink-0 snap-start rounded-2xl border border-neutral-200/60 p-3;
+		background: #f8f9f9;
+		width: calc(100% - 0.25rem);
+		transition: border-color 200ms ease;
+	}
+
+	.simple-lead-pdf-preview__card.is-active {
+		border-color: rgba(0, 96, 82, 0.28);
+	}
+
+	.simple-lead-pdf-preview__label {
+		@apply mb-3 text-xs font-semibold uppercase tracking-[0.1em] text-neutral-600;
+	}
+
+	.simple-lead-pdf-preview__embed-wrap {
+		@apply overflow-hidden rounded-xl bg-white;
+		aspect-ratio: 1.42 / 1;
+	}
+
+	.simple-lead-pdf-preview__embed {
+		@apply h-full w-full border-0 bg-white;
+		pointer-events: none;
+		transform: scale(1.012);
+		transform-origin: center center;
+	}
+
+	.simple-lead-pdf-preview__capture {
+		@apply mt-6 rounded-2xl border border-neutral-200/60 p-4 sm:p-5;
+		background: #f8f9f9;
+	}
+
+	.simple-lead-pdf-preview__form {
+		@apply flex flex-col gap-3 sm:flex-row;
+	}
+
+	.simple-lead-pdf-preview__form input {
+		@apply h-12 min-h-[52px] w-full flex-1 rounded-xl border border-neutral-200/90 bg-white px-4 text-base leading-none text-neutral-800 outline-none placeholder:text-neutral-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-200;
+		appearance: none;
+	}
+
+	.simple-lead-pdf-preview__form button,
+	.simple-lead-pdf-preview__actions a:first-child {
+		@apply inline-flex h-12 min-h-[52px] w-full items-center justify-center rounded-xl bg-primary-600 px-6 text-base font-semibold text-white transition hover:bg-primary-500 sm:w-auto;
+	}
+
+	.simple-lead-pdf-preview__consent {
+		@apply mt-4 flex items-start gap-3 text-sm leading-relaxed text-neutral-500;
+	}
+
+	.simple-lead-pdf-preview__consent input {
+		@apply mt-0.5 h-5 w-5 shrink-0 rounded border-neutral-200/90 bg-white;
+	}
+
+	.simple-lead-pdf-preview__actions {
+		@apply flex flex-col gap-3 sm:flex-row;
+	}
+
+	.simple-lead-pdf-preview__actions a:last-child {
+		@apply inline-flex h-12 min-h-[52px] w-full items-center justify-center rounded-xl border border-neutral-200/90 bg-white px-6 text-base font-semibold text-neutral-700 transition hover:bg-neutral-100 sm:w-auto;
+	}
+
+	.simple-lead-pdf-preview__capture [hidden] {
+		display: none !important;
+	}
+
+	.simple-lead-pdf-preview__dots {
+		@apply mt-4 flex justify-center gap-2;
+	}
+
+	.simple-lead-pdf-preview__dot {
+		@apply h-2.5 w-2.5 rounded-full bg-neutral-400/70 transition;
+	}
+
+	.simple-lead-pdf-preview__dot.is-active {
+		@apply bg-primary-600;
+	}
+
+	@media (max-width: 640px) {
+		.simple-lead-pdf-preview {
+			@apply mt-6 rounded-2xl p-5;
+		}
+
+		.simple-lead-pdf-preview::before {
+			top: -1.8rem;
+			bottom: -1.8rem;
+		}
+
+		.simple-lead-pdf-preview__card {
+			width: calc(100% - 0.2rem);
+		}
+
+		.simple-lead-pdf-preview__header h2 {
+			@apply text-2xl leading-tight;
+		}
+
+		.simple-lead-pdf-preview__form input,
+		.simple-lead-pdf-preview__form button,
+		.simple-lead-pdf-preview__actions a:first-child,
+		.simple-lead-pdf-preview__actions a:last-child {
+			@apply min-h-[56px] text-lg;
+		}
+
+		.simple-lead-pdf-preview__consent {
+			@apply text-base leading-7;
+		}
+	}
+</style>

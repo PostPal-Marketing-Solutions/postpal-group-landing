@@ -1,0 +1,271 @@
+---
+type TestimonialItem = {
+	quote: string
+	name: string
+	role: string
+	ratingLabel?: string
+}
+
+type Props = {
+	testimonials?: TestimonialItem[]
+}
+
+const defaultTestimonials: TestimonialItem[] = [
+	{
+		quote:
+			'Mit PostPal konnten wir unsere Winback- und Upsell-Kampagnen viel schneller aufsetzen. Wir sehen deutlich bessere Reaktivierung und haben endlich einen klaren CRM-Workflow.',
+		name: 'Sarah K.',
+		role: 'CRM Lead, D2C Brand',
+		ratingLabel: '5 von 5 Sternen'
+	},
+	{
+		quote:
+			'Die Plattform bringt Struktur in unser Direct-Mail-Setup. Besonders hilfreich war, wie schnell wir Segmente und Kampagnen logisch priorisieren konnten.',
+		name: 'Daniel M.',
+		role: 'Head of Growth, E-Commerce Brand',
+		ratingLabel: '5 von 5 Sternen'
+	},
+	{
+		quote:
+			'Wir hatten vorher Einzelaktionen ohne System. Mit PostPal arbeiten wir jetzt mit einem klaren Plan und sehen bessere Ergebnisse bei Bestandskunden.',
+		name: 'Laura P.',
+		role: 'Marketing Managerin, Consumer Brand',
+		ratingLabel: '5 von 5 Sternen'
+	}
+]
+
+const { testimonials = defaultTestimonials } = Astro.props
+---
+
+<section class="simple-lead-testimonial-band" aria-label="Kundenstimme">
+	<div class="simple-lead-testimonial">
+		<div class="simple-lead-testimonial__head">
+			<div class="simple-lead-testimonial__controls">
+				<button type="button" data-slide-prev aria-label="Vorheriges Testimonial">←</button>
+				<button type="button" data-slide-next aria-label="Nächstes Testimonial">→</button>
+			</div>
+		</div>
+
+		<div class="simple-lead-testimonial__viewport">
+			<div class="simple-lead-testimonial__slider" data-testimonial-slider>
+				{
+					testimonials.map((testimonial) => (
+					<article class="simple-lead-testimonial__card">
+							<div
+								class="simple-lead-testimonial__rating"
+								aria-label={testimonial.ratingLabel || '5 von 5 Sternen'}
+							>
+								<span aria-hidden="true">★★★★★</span>
+								<p>{testimonial.ratingLabel || '5 von 5 Sternen'}</p>
+							</div>
+
+							<blockquote>"{testimonial.quote}"</blockquote>
+
+							<div class="simple-lead-testimonial__author">
+								<span aria-hidden="true">{testimonial.name.slice(0, 1)}</span>
+								<div>
+									<p>{testimonial.name}</p>
+									<p>{testimonial.role}</p>
+								</div>
+							</div>
+						</article>
+					))
+				}
+			</div>
+		</div>
+		<div class="simple-lead-testimonial__dots">
+			{
+				testimonials.map((_, index) => (
+					<button
+						type="button"
+						class="simple-lead-testimonial__dot"
+						data-slide-dot={String(index)}
+						aria-label={`Zu Testimonial ${index + 1}`}
+					></button>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script is:inline>
+	const container = document.querySelector('[data-testimonial-slider]')
+	if (container) {
+		const prev = document.querySelector('[data-slide-prev]')
+		const next = document.querySelector('[data-slide-next]')
+		const cards = Array.from(container.querySelectorAll('.simple-lead-testimonial__card'))
+		const dots = Array.from(document.querySelectorAll('[data-slide-dot]'))
+		let activeIndex = 0
+
+		const goTo = (index) => {
+			if (!cards.length) return
+			const bounded = Math.max(0, Math.min(index, cards.length - 1))
+			const target = cards[bounded]
+			target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })
+		}
+
+		const updateActiveDot = () => {
+			if (!cards.length || !dots.length) return
+			const viewportCenter = container.scrollLeft + container.clientWidth / 2
+			let closestIndex = 0
+			let minDistance = Number.POSITIVE_INFINITY
+
+			cards.forEach((card, index) => {
+				const cardCenter = card.offsetLeft + card.clientWidth / 2
+				const distance = Math.abs(cardCenter - viewportCenter)
+				if (distance < minDistance) {
+					minDistance = distance
+					closestIndex = index
+				}
+			})
+
+			if (closestIndex !== activeIndex) {
+				activeIndex = closestIndex
+			}
+
+			dots.forEach((dot, index) => {
+				dot.classList.toggle('is-active', index === activeIndex)
+				dot.setAttribute('aria-current', index === activeIndex ? 'true' : 'false')
+			})
+
+			cards.forEach((card, index) => {
+				card.classList.toggle('is-active', index === activeIndex)
+			})
+		}
+
+		prev?.addEventListener('click', () => goTo(activeIndex - 1))
+		next?.addEventListener('click', () => goTo(activeIndex + 1))
+
+		dots.forEach((dot) => {
+			dot.addEventListener('click', () => {
+				const index = Number(dot.getAttribute('data-slide-dot') || '0')
+				goTo(index)
+			})
+		})
+
+		container.addEventListener('scroll', updateActiveDot, { passive: true })
+		updateActiveDot()
+	}
+</script>
+
+<style>
+	.simple-lead-testimonial-band {
+		@apply mt-8 border-y border-neutral-200/55 bg-neutral-100 py-10 sm:py-12;
+	}
+
+	.simple-lead-testimonial {
+		@apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+	}
+
+	.simple-lead-testimonial__head {
+		@apply mb-4 flex items-center justify-end gap-4;
+	}
+
+	.simple-lead-testimonial__controls {
+		@apply flex items-center gap-2;
+	}
+
+	.simple-lead-testimonial__controls button {
+		@apply inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200/70 bg-white text-base font-semibold text-neutral-700 transition hover:bg-neutral-100;
+	}
+
+	.simple-lead-testimonial__slider {
+		@apply flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2;
+		scroll-padding-left: 0.25rem;
+		scrollbar-width: none;
+	}
+
+	.simple-lead-testimonial__viewport {
+		@apply relative;
+	}
+
+	.simple-lead-testimonial__slider::-webkit-scrollbar {
+		display: none;
+	}
+
+	.simple-lead-testimonial__card {
+		@apply shrink-0 snap-start rounded-3xl border border-primary-200/55 bg-transparent p-6 sm:p-7 lg:p-8;
+		width: min(78%, 48rem);
+		box-shadow: none;
+	}
+
+	:global([data-lead-magnet-gsap]) .simple-lead-testimonial__card {
+		opacity: 0.72;
+		transform: scale(0.988);
+		border-color: rgba(148, 160, 164, 0.38);
+		background-color: rgba(248, 249, 249, 0.45);
+		transition:
+			transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+			opacity 260ms cubic-bezier(0.22, 1, 0.36, 1),
+			border-color 260ms ease,
+			background-color 260ms ease;
+	}
+
+	:global([data-lead-magnet-gsap]) .simple-lead-testimonial__card.is-active {
+		opacity: 1;
+		transform: scale(1);
+		border-color: rgba(0, 96, 82, 0.35);
+		background-color: rgba(255, 255, 255, 0.92);
+		box-shadow: none;
+	}
+
+	.simple-lead-testimonial__rating {
+		@apply mb-4 flex flex-wrap items-center gap-3;
+	}
+
+	.simple-lead-testimonial__rating span {
+		@apply text-lg leading-none text-accent-600;
+		letter-spacing: 0.08em;
+	}
+
+	.simple-lead-testimonial__rating p {
+		@apply m-0 text-sm font-medium text-neutral-600;
+	}
+
+	.simple-lead-testimonial blockquote {
+		@apply m-0 text-xl font-semibold leading-snug text-neutral-900 lg:text-2xl;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-testimonial__author {
+		@apply mt-6 flex items-center gap-3;
+	}
+
+	.simple-lead-testimonial__author > span {
+		@apply inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white;
+	}
+
+	.simple-lead-testimonial__author p:first-child {
+		@apply m-0 text-base font-semibold text-neutral-900;
+	}
+
+	.simple-lead-testimonial__author p:last-child {
+		@apply m-0 text-sm text-neutral-600;
+	}
+
+	.simple-lead-testimonial__dots {
+		@apply mt-4 flex justify-center gap-2;
+	}
+
+	.simple-lead-testimonial__dot {
+		@apply h-2.5 w-2.5 rounded-full bg-neutral-400/70 transition;
+	}
+
+	.simple-lead-testimonial__dot.is-active {
+		@apply bg-primary-600;
+	}
+
+	@media (max-width: 640px) {
+		.simple-lead-testimonial {
+			@apply px-4;
+		}
+
+		.simple-lead-testimonial__card {
+			width: calc(100% - 1.25rem);
+		}
+
+		.simple-lead-testimonial blockquote {
+			@apply text-lg;
+		}
+	}
+</style>

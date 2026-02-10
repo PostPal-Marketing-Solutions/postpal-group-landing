@@ -1,0 +1,242 @@
+---
+const faqItems = [
+	{
+		question: 'Für wen ist das Playbook geeignet?',
+		answer:
+			'Für D2C Teams aus CRM, Growth und E-Commerce, die Print-Mailings strukturiert statt ad hoc einsetzen möchten und klare Retention-Ziele verfolgen.'
+	},
+	{
+		question: 'Welche Daten brauche ich für die Umsetzung?',
+		answer:
+			'Basisdaten wie Bestellhistorie, Kundensegmente und Lieferadressen reichen in der Regel aus. Im Playbook zeigen wir, wie du daraus kampagnenfähige Segmente ableitest.'
+	},
+	{
+		question: 'Ist das Framework DSGVO-konform?',
+		answer:
+			'Ja. Wir behandeln Post-Werbung im Rahmen des berechtigten Interesses (Art. 6 Abs. 1 f DSGVO) und zeigen praktische Leitplanken für eine saubere Umsetzung.'
+	},
+	{
+		question: 'Was kostet das Playbook und was kommt danach?',
+		answer:
+			'Das Playbook ist kostenlos. Die späteren Kampagnenkosten hängen von Volumen, Zielgruppe und Versandfrequenz ab. Du erhältst im Playbook Empfehlungen vom Testlauf bis zur Skalierung.'
+	}
+]
+---
+
+<section class="simple-lead-faq" aria-label="Häufig gestellte Fragen">
+	<div class="simple-lead-faq__inner">
+		<h2>Häufig gestellte Fragen</h2>
+
+		<div class="simple-lead-faq__list">
+			{
+				faqItems.map((item, index) => (
+					<article class="simple-lead-faq__item" data-faq-item>
+						<button
+							type="button"
+							class="simple-lead-faq__trigger"
+							data-faq-trigger
+							aria-expanded="true"
+							aria-controls={`faq-panel-${index}`}
+							id={`faq-trigger-${index}`}
+						>
+							<span>{item.question}</span>
+							<span class="simple-lead-faq__chevron" aria-hidden="true">
+								<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="M5 7.5L10 12.5L15 7.5"
+										stroke="currentColor"
+										stroke-width="2.2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									/>
+								</svg>
+							</span>
+						</button>
+						<div
+							class="simple-lead-faq__panel"
+							id={`faq-panel-${index}`}
+							role="region"
+							aria-labelledby={`faq-trigger-${index}`}
+						>
+							<p>{item.answer}</p>
+						</div>
+					</article>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<script is:inline>
+	const isGsapVariant = Boolean(document.querySelector('[data-lead-magnet-gsap]'))
+	const FAQ_TRANSITION_MS = 260
+
+	const interactiveSelector = 'a, button, input, textarea, select, [role="button"]'
+
+	const closePanelAnimated = (panel) => {
+		if (panel.dataset.faqAnimating === 'true') return
+		panel.dataset.faqAnimating = 'true'
+		panel.hidden = false
+
+		const startHeight = panel.scrollHeight || panel.offsetHeight
+		panel.style.overflow = 'hidden'
+		panel.style.maxHeight = `${startHeight}px`
+		panel.style.opacity = '1'
+		panel.style.transition = `max-height ${FAQ_TRANSITION_MS}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${FAQ_TRANSITION_MS}ms ease`
+		panel.offsetHeight
+		panel.style.maxHeight = '0px'
+		panel.style.opacity = '0'
+
+		const onDone = (event) => {
+			if (event.propertyName !== 'max-height') return
+			panel.hidden = true
+			panel.dataset.faqAnimating = 'false'
+			panel.style.removeProperty('max-height')
+			panel.style.removeProperty('opacity')
+			panel.style.removeProperty('transition')
+			panel.style.removeProperty('overflow')
+			panel.removeEventListener('transitionend', onDone)
+		}
+
+		panel.addEventListener('transitionend', onDone)
+	}
+
+	const openPanelAnimated = (panel) => {
+		if (panel.dataset.faqAnimating === 'true') return
+		panel.dataset.faqAnimating = 'true'
+		panel.hidden = false
+
+		panel.style.overflow = 'hidden'
+		panel.style.maxHeight = '0px'
+		panel.style.opacity = '0'
+		panel.style.transition = `max-height ${FAQ_TRANSITION_MS}ms cubic-bezier(0.22, 1, 0.36, 1), opacity ${FAQ_TRANSITION_MS}ms ease`
+		const targetHeight = panel.scrollHeight
+		panel.offsetHeight
+		panel.style.maxHeight = `${targetHeight}px`
+		panel.style.opacity = '1'
+
+		const onDone = (event) => {
+			if (event.propertyName !== 'max-height') return
+			panel.dataset.faqAnimating = 'false'
+			panel.style.removeProperty('max-height')
+			panel.style.removeProperty('opacity')
+			panel.style.removeProperty('transition')
+			panel.style.removeProperty('overflow')
+			panel.removeEventListener('transitionend', onDone)
+		}
+
+		panel.addEventListener('transitionend', onDone)
+	}
+
+	const toggleFaqItem = (item) => {
+		const trigger = item.querySelector('[data-faq-trigger]')
+		if (!trigger) return
+
+		const expanded = trigger.getAttribute('aria-expanded') === 'true'
+		const panelId = trigger.getAttribute('aria-controls')
+		const panel = panelId ? document.getElementById(panelId) : null
+		trigger.setAttribute('aria-expanded', expanded ? 'false' : 'true')
+
+		if (!panel) return
+
+		if (!isGsapVariant) {
+			panel.toggleAttribute('hidden', expanded)
+			return
+		}
+
+		if (expanded) {
+			closePanelAnimated(panel)
+		} else {
+			openPanelAnimated(panel)
+		}
+	}
+
+	const items = Array.from(document.querySelectorAll('[data-faq-item]'))
+	items.forEach((item) => {
+		item.addEventListener('click', (event) => {
+			const selection = window.getSelection?.()
+			if (selection && selection.type === 'Range') return
+
+			const target = event.target
+			if (!(target instanceof Element)) return
+			const inInteractiveElement = target.closest(interactiveSelector)
+			if (inInteractiveElement && !inInteractiveElement.matches('[data-faq-trigger]')) return
+
+			toggleFaqItem(item)
+		})
+	})
+</script>
+
+<style>
+	.simple-lead-faq {
+		@apply mt-8 w-full border-y border-neutral-200/55 py-10 sm:py-12;
+		background: rgb(244 245 245 / 1);
+	}
+
+	.simple-lead-faq__inner {
+		@apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+	}
+
+	.simple-lead-faq h2 {
+		@apply mb-8 text-center text-4xl font-semibold text-neutral-900 sm:mb-10 sm:text-5xl;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-faq__list {
+		@apply space-y-4;
+	}
+
+	.simple-lead-faq__item {
+		@apply rounded-2xl border border-neutral-200/70 bg-neutral-100/70 p-5 sm:p-6;
+		cursor: pointer;
+		transition: border-color 220ms ease, background-color 220ms ease;
+	}
+
+	.simple-lead-faq__item:hover {
+		border-color: rgba(0, 96, 82, 0.28);
+		background-color: rgba(255, 255, 255, 0.72);
+	}
+
+	.simple-lead-faq__trigger {
+		@apply flex w-full items-start justify-between gap-4 text-left text-2xl font-semibold leading-tight text-neutral-900 sm:items-center;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-faq__chevron {
+		@apply inline-flex h-8 w-8 shrink-0 items-center justify-center text-neutral-500 transition;
+	}
+
+	.simple-lead-faq__chevron svg {
+		@apply h-5 w-5;
+	}
+
+	.simple-lead-faq__trigger[aria-expanded='false'] .simple-lead-faq__chevron {
+		transform: rotate(-90deg);
+	}
+
+	.simple-lead-faq__panel {
+		@apply pt-4;
+	}
+
+	.simple-lead-faq__panel p {
+		@apply m-0 max-w-5xl text-xl leading-relaxed text-neutral-600;
+	}
+
+	@media (max-width: 640px) {
+		.simple-lead-faq {
+			@apply mt-6 py-8;
+		}
+
+		.simple-lead-faq h2 {
+			@apply text-3xl;
+		}
+
+		.simple-lead-faq__trigger {
+			@apply text-xl;
+		}
+
+		.simple-lead-faq__panel p {
+			@apply text-lg;
+		}
+	}
+</style>

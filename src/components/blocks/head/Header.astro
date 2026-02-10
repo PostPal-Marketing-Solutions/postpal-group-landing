@@ -17,7 +17,9 @@ type Props = {
 	description?: string
 	ogImage?: string
 	canonical?: boolean
+	canonicalUrl?: string
 	noindex?: boolean
+	enableTracking?: boolean
 }
 // Page Metadata
 const {
@@ -25,13 +27,15 @@ const {
 	description = configData.siteDescription,
 	ogImage = configData.ogImage,
 	canonical = configData.canonical,
-	noindex = configData.noindex
+	canonicalUrl,
+	noindex = configData.noindex,
+	enableTracking = true
 } = Astro.props
 ---
 
 <head>
-	{googleAnalyticsMeasurementID && <GoogleAnalytics />}
-	{googleTagManagerID && <GoogleTagManagerHead />}
+	{enableTracking && googleAnalyticsMeasurementID && <GoogleAnalytics />}
+	{enableTracking && googleTagManagerID && <GoogleTagManagerHead />}
 	<GoogleSearchConsole />
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -40,6 +44,7 @@ const {
 		description={description}
 		ogImage={ogImage}
 		canonical={canonical}
+		canonicalUrl={canonicalUrl}
 		noindex={noindex}
 	/>
 	<link rel="icon" href="/favicon.png" type="image/png" />

@@ -1,0 +1,139 @@
+---
+import LeadMagnetLayout from '../layouts/LeadMagnetLayout.astro'
+
+const SEO = {
+	title: 'Landingpage Beispiele | PostPal Group',
+	description:
+		'Übersicht der aktiven Lead-Magnet-Landingpage-Varianten.'
+}
+
+const variants = [
+	{
+		code: 'STD',
+		name: 'Variante: Simple Hero',
+		path: '/reporting-playbook',
+		tag: 'Hero Only',
+		description: 'Nur die Hero-Section mit Lead-Capture-Flow und Preview-Panel.'
+	},
+	{
+		code: 'GSAP',
+		name: 'Variante: Simple Hero (GSAP)',
+		path: '/reporting-playbook-gsap',
+		tag: 'Hero + Motion',
+		description: 'Die gleiche Struktur wie Standard, ergänzt um subtile, lazy-geladene GSAP-Animationen.'
+	}
+]
+---
+
+<LeadMagnetLayout title={SEO.title} description={SEO.description} noindex={true}>
+	<main class="examples">
+		<section class="examples-hero">
+			<p class="examples-kicker">Lead-Magnet Playground</p>
+			<h1>Vergleiche unterschiedliche Landingpage-Ansätze für dein Outreach</h1>
+			<p>
+				Aktuell fokussieren wir auf zwei produktive Varianten: die clean baseline und die GSAP-Version mit
+				subtiler Motion.
+			</p>
+		</section>
+
+		<section class="examples-grid">
+			{
+				variants.map((variant) => (
+					<article class="examples-card">
+						<p class="examples-card__index">{variant.code}</p>
+						<p class="examples-card__tag">{variant.tag}</p>
+						<h2>{variant.name}</h2>
+						<p>{variant.description}</p>
+						<div class="examples-card__actions">
+							<a href={variant.path}>Route öffnen</a>
+						</div>
+					</article>
+				))
+			}
+		</section>
+
+		<section class="examples-help">
+			<h2>Schnelle Test-URLs pro Variante</h2>
+			<ul>
+				<li>
+					<code>?state=submitted</code> für direkte Download-Ansicht
+				</li>
+				<li>
+					<code>?state=known&token=demo-felix</code> für bekannte Lead-Ansicht
+				</li>
+				<li>
+					<code>?state=known&token=invalid</code> für Fallback auf gated
+				</li>
+			</ul>
+		</section>
+	</main>
+</LeadMagnetLayout>
+
+<style>
+	.examples {
+		@apply mx-auto w-full max-w-6xl space-y-8 px-6 pb-8;
+	}
+
+	.examples-hero {
+		@apply rounded-3xl border border-neutral-200/80 bg-[linear-gradient(140deg,#fff,#f1f7f6)] p-8;
+	}
+
+	.examples-kicker {
+		@apply mb-3 inline-flex rounded-full border border-primary-300 bg-primary-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] text-primary-700;
+	}
+
+	.examples-hero h1 {
+		@apply mb-4 text-4xl font-semibold text-neutral-900;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.examples-hero p {
+		@apply mb-0 max-w-3xl text-neutral-700;
+	}
+
+	.examples-grid {
+		@apply grid gap-4 md:grid-cols-2;
+	}
+
+	.examples-card {
+		@apply rounded-3xl border border-neutral-200/80 bg-white/90 p-6;
+	}
+
+	.examples-card__index {
+		@apply mb-2 text-xs font-semibold uppercase tracking-[0.1em] text-neutral-500;
+	}
+
+	.examples-card__tag {
+		@apply mb-2 inline-flex rounded-full border border-accent-300 bg-accent-50 px-3 py-1 text-xs font-semibold text-accent-900;
+	}
+
+	.examples-card h2 {
+		@apply mb-3 text-3xl font-semibold text-neutral-900;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.examples-card p {
+		@apply text-neutral-700;
+	}
+
+	.examples-card__actions a {
+		@apply inline-flex h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white transition hover:bg-primary-500;
+	}
+
+	.examples-help {
+		@apply rounded-3xl border border-neutral-200/80 bg-white p-6;
+	}
+
+	.examples-help h2 {
+		@apply mb-4 text-2xl font-semibold text-neutral-900;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.examples-help ul {
+		@apply space-y-2 text-sm text-neutral-700;
+	}
+
+	.examples-help code {
+		@apply rounded bg-neutral-100 px-2 py-1 text-xs text-neutral-800;
+	}
+</style>

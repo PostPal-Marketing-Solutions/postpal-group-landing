@@ -15,10 +15,17 @@ type Props = {
 	description?: string
 	ogImage?: string
 	canonical?: boolean
+	canonicalUrl?: string
 	noindex?: boolean
 }
 
-const { title, description, ogImage, canonical, noindex } = Astro.props
+const { title, description, ogImage, canonical, canonicalUrl, noindex } = Astro.props
+const resolvedCanonical =
+	canonical !== false
+		? canonicalUrl
+			? new URL(canonicalUrl, Astro.site ?? Astro.url).toString()
+			: Astro.url.toString()
+		: null
 ---
 
 <Fragment>
@@ -34,7 +41,6 @@ const { title, description, ogImage, canonical, noindex } = Astro.props
 	<meta property="twitter:title" content={title} />
 	<meta property="twitter:description" content={description} />
 	<meta property="twitter:image" content={ogImage} />
-	<link rel="canonical" href={Astro.url} />
-	{canonical && <link rel="canonical" href={Astro.url} item-prop="url" />}
+	{resolvedCanonical && <link rel="canonical" href={resolvedCanonical} item-prop="url" />}
 	{noindex && <meta name="robots" content="noindex,nofollow" />}
 </Fragment>

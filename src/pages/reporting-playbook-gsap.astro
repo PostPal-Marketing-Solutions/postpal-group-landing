@@ -1,0 +1,109 @@
+---
+import LeadMagnetLayout from '../layouts/LeadMagnetLayout.astro'
+import SimpleLeadHero from '../components/lead-magnet/SimpleLeadHero.astro'
+import SimpleLeadStatsStrip from '../components/lead-magnet/SimpleLeadStatsStrip.astro'
+import SimpleLeadLogoStrip from '../components/lead-magnet/SimpleLeadLogoStrip.astro'
+import SimpleLeadContentSection from '../components/lead-magnet/SimpleLeadContentSection.astro'
+import SimpleLeadTestimonial from '../components/lead-magnet/SimpleLeadTestimonial.astro'
+import SimpleLeadPdfPreviewSection from '../components/lead-magnet/SimpleLeadPdfPreviewSection.astro'
+import SimpleLeadQuoteEndorsement from '../components/lead-magnet/SimpleLeadQuoteEndorsement.astro'
+import SimpleLeadFaqSection from '../components/lead-magnet/SimpleLeadFaqSection.astro'
+import SimpleLeadAppPromo from '../components/lead-magnet/SimpleLeadAppPromo.astro'
+import previewImage from '../assets/hero-book-mockup.png'
+import {
+	KNOWN_LEAD_TOKENS,
+	LEAD_MAGNET_EVENTS,
+	REPORTING_EXAMPLE_ASSET
+} from '../config/leadMagnetReportingExample'
+
+const SEO = {
+	title: 'CRM Print-Mailing Playbook 2026 | Interaktive Vorschau | PostPal',
+	description:
+		'Interaktive Vorschau des PostPal CRM Print-Mailing Playbooks mit subtilen Animationen. Inhalte, Kampagnentypen und Framework wie in der Hauptversion.',
+	ogImage: previewImage.src
+}
+---
+
+<LeadMagnetLayout
+	title={SEO.title}
+	description={SEO.description}
+	ogImage={SEO.ogImage}
+	canonicalUrl="/reporting-playbook/"
+	noindex={true}
+	enableTracking={true}
+>
+	<article
+		class="hero-only"
+		data-lead-magnet-root
+		data-lead-magnet-gsap
+		data-events={JSON.stringify(LEAD_MAGNET_EVENTS)}
+		data-asset={JSON.stringify(REPORTING_EXAMPLE_ASSET)}
+		data-known-lead-tokens={JSON.stringify(KNOWN_LEAD_TOKENS)}
+	>
+		<SimpleLeadHero
+			previewImage={previewImage}
+			downloadUrl={REPORTING_EXAMPLE_ASSET.downloadUrl}
+			highlightStyle="handwritten"
+			mediaStyle="image-only"
+		/>
+		<SimpleLeadLogoStrip />
+		<SimpleLeadStatsStrip />
+		<SimpleLeadContentSection />
+		<SimpleLeadTestimonial />
+		<SimpleLeadPdfPreviewSection downloadUrl={REPORTING_EXAMPLE_ASSET.downloadUrl} />
+		<SimpleLeadQuoteEndorsement />
+		<SimpleLeadFaqSection />
+		<SimpleLeadAppPromo />
+	</article>
+
+	<script>
+		import { initLeadMagnetPrototype } from '../scripts/leadMagnetPrototype'
+
+		initLeadMagnetPrototype('[data-lead-magnet-root]')
+
+		const setupGsapEnhancement = () => {
+			if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				return
+			}
+
+			const root = document.querySelector('[data-lead-magnet-gsap]')
+			if (!root || root instanceof HTMLElement === false || root.dataset.gsapLoaderReady === 'true') {
+				return
+			}
+
+			root.dataset.gsapLoaderReady = 'true'
+
+			let didLoad = false
+			const loadAnimations = async () => {
+				if (didLoad) {
+					return
+				}
+
+				didLoad = true
+
+				try {
+					const { initLeadMagnetAnimationsGsap } = await import('../scripts/leadMagnetAnimationsGsap')
+					initLeadMagnetAnimationsGsap('[data-lead-magnet-gsap]')
+				} catch {
+					// Keep the non-animated experience if GSAP fails to load.
+				}
+			}
+
+			const triggerEvents = ['pointerdown', 'keydown', 'touchstart', 'scroll']
+			triggerEvents.forEach((eventName) => {
+				window.addEventListener(eventName, () => void loadAnimations(), {
+					once: true,
+					passive: eventName !== 'keydown'
+				})
+			})
+
+			if ('requestIdleCallback' in window) {
+				window.requestIdleCallback(() => void loadAnimations(), { timeout: 1800 })
+			} else {
+				setTimeout(() => void loadAnimations(), 1800)
+			}
+		}
+
+		setupGsapEnhancement()
+	</script>
+</LeadMagnetLayout>

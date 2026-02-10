@@ -1,0 +1,144 @@
+---
+const stats = [
+	{
+		value: '24 Seiten',
+		target: 24,
+		suffix: ' Seiten',
+		label: 'Kompakt, konkret, umsetzbar'
+	},
+	{
+		value: '9 Kampagnen',
+		target: 9,
+		suffix: ' Kampagnen',
+		label: 'Vom Winback bis Upsell'
+	},
+	{
+		value: '18 min',
+		target: 18,
+		suffix: ' min',
+		label: 'Durchschnittliche Lesezeit'
+	}
+]
+---
+
+<section class="simple-lead-stats" aria-label="Playbook Kennzahlen">
+	<div class="simple-lead-stats__inner">
+		{
+			stats.map((item) => (
+				<article class="simple-lead-stats__item">
+					<p
+						class="simple-lead-stats__value"
+						data-count-up
+						data-target={String(item.target)}
+						data-suffix={item.suffix}
+					>
+						{item.value}
+					</p>
+					<p class="simple-lead-stats__label">{item.label}</p>
+				</article>
+			))
+		}
+	</div>
+</section>
+
+<script is:inline>
+	const statsSection = document.querySelector('.simple-lead-stats')
+	if (statsSection) {
+		const countElements = Array.from(statsSection.querySelectorAll('[data-count-up]'))
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		let hasAnimated = false
+
+		const renderFinalValues = () => {
+			countElements.forEach((element) => {
+				const target = Number(element.getAttribute('data-target') || '0')
+				const suffix = element.getAttribute('data-suffix') || ''
+				element.textContent = `${target}${suffix}`
+			})
+		}
+
+		const animateCounters = () => {
+			if (hasAnimated) return
+			hasAnimated = true
+
+			if (prefersReducedMotion) {
+				renderFinalValues()
+				return
+			}
+
+			const durationMs = 900
+			const start = performance.now()
+			const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3)
+
+			const tick = (now) => {
+				const elapsed = now - start
+				const progress = Math.min(elapsed / durationMs, 1)
+				const easedProgress = easeOutCubic(progress)
+
+				countElements.forEach((element) => {
+					const target = Number(element.getAttribute('data-target') || '0')
+					const suffix = element.getAttribute('data-suffix') || ''
+					const currentValue = Math.round(target * easedProgress)
+					element.textContent = `${currentValue}${suffix}`
+				})
+
+				if (progress < 1) {
+					requestAnimationFrame(tick)
+				} else {
+					renderFinalValues()
+				}
+			}
+
+			requestAnimationFrame(tick)
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						animateCounters()
+						observer.disconnect()
+					}
+				})
+			},
+			{
+				threshold: 0.35,
+				rootMargin: '0px 0px -8% 0px'
+			}
+		)
+
+		observer.observe(statsSection)
+	}
+</script>
+
+<style>
+	.simple-lead-stats {
+		@apply mt-6 border-y border-neutral-200/55 bg-neutral-200/80 py-10 sm:py-12;
+	}
+
+	.simple-lead-stats__inner {
+		@apply mx-auto grid w-full max-w-5xl gap-8 px-4 text-center sm:px-6 md:grid-cols-3 md:gap-6;
+	}
+
+	.simple-lead-stats__item {
+		@apply flex flex-col items-center;
+	}
+
+	.simple-lead-stats__value {
+		@apply text-4xl font-semibold leading-none text-neutral-900;
+		font-family: 'Outfit Variable', 'Roboto', sans-serif;
+	}
+
+	.simple-lead-stats__label {
+		@apply mt-2 text-sm font-medium leading-relaxed text-neutral-800;
+	}
+
+	@media (max-width: 640px) {
+		.simple-lead-stats__value {
+			@apply text-4xl;
+		}
+
+		.simple-lead-stats__label {
+			@apply text-base;
+		}
+	}
+</style>
