@@ -1,6 +1,8 @@
 ---
 import pagePreviewOne from '../../assets/page-one.pdf?url'
 import pagePreviewTwo from '../../assets/page-two.pdf?url'
+import pagePreviewOneImage from '../../assets/page-one-preview.webp'
+import pagePreviewTwoImage from '../../assets/page-two-preview.webp'
 
 type Props = {
 	downloadUrl: string
@@ -36,13 +38,31 @@ const {
 		<div class="simple-lead-pdf-preview__scroll" data-pdf-slider>
 			<article class="simple-lead-pdf-preview__card">
 				<p class="simple-lead-pdf-preview__label">{pageOneLabel}</p>
-					<div class="simple-lead-pdf-preview__embed-wrap">
-						<iframe
-							data-src={`${pagePreviewOne}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=Fit`}
-							title="Beispielseite 1 aus dem Playbook"
-							class="simple-lead-pdf-preview__embed"
+				<div class="simple-lead-pdf-preview__embed-wrap">
+					<iframe
+						data-src={`${pagePreviewOne}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=Fit`}
+						title="Beispielseite 1 aus dem Playbook"
+						class="simple-lead-pdf-preview__embed"
+						data-pdf-frame
+						loading="lazy"
+					></iframe>
+					<a
+						href={pagePreviewOne}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="simple-lead-pdf-preview__fallback"
+						data-pdf-fallback-link
+						aria-label="Beispielseite 1 als PDF öffnen"
+						hidden
+					>
+						<img
+							src={pagePreviewOneImage.src}
+							alt="Vorschau Beispielseite 1"
+							class="simple-lead-pdf-preview__fallback-image"
 							loading="lazy"
-						></iframe>
+							decoding="async"
+						/>
+					</a>
 				</div>
 			</article>
 
@@ -53,8 +73,26 @@ const {
 						data-src={`${pagePreviewTwo}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=Fit`}
 						title="Beispielseite 2 aus dem Playbook"
 						class="simple-lead-pdf-preview__embed"
+						data-pdf-frame
 						loading="lazy"
 					></iframe>
+					<a
+						href={pagePreviewTwo}
+						target="_blank"
+						rel="noopener noreferrer"
+						class="simple-lead-pdf-preview__fallback"
+						data-pdf-fallback-link
+						aria-label="Beispielseite 2 als PDF öffnen"
+						hidden
+					>
+						<img
+							src={pagePreviewTwoImage.src}
+							alt="Vorschau Beispielseite 2"
+							class="simple-lead-pdf-preview__fallback-image"
+							loading="lazy"
+							decoding="async"
+						/>
+					</a>
 				</div>
 			</article>
 		</div>
@@ -116,6 +154,16 @@ const {
 
 <script is:inline>
 	const pdfSections = Array.from(document.querySelectorAll('.simple-lead-pdf-preview'))
+	const FRAME_LOAD_TIMEOUT_MS = 1800
+
+	const isIosSafariBrowser = () => {
+		const userAgent = navigator.userAgent
+		const isIOSDevice =
+			/iP(hone|ad|od)/i.test(userAgent) || (/Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1)
+		const isWebKit = /WebKit/i.test(userAgent)
+		const isNonSafariIOS = /CriOS|FxiOS|EdgiOS/i.test(userAgent)
+		return isIOSDevice && isWebKit && !isNonSafariIOS
+	}
 
 	pdfSections.forEach((section) => {
 		const root = section.closest('[data-lead-magnet-root]')
@@ -127,17 +175,120 @@ const {
 		const next = section.querySelector('[data-pdf-next]')
 		const cards = Array.from(slider.querySelectorAll('.simple-lead-pdf-preview__card'))
 		const dots = Array.from(section.querySelectorAll('[data-pdf-dot]'))
-		const frames = Array.from(slider.querySelectorAll('iframe.simple-lead-pdf-preview__embed'))
+		const previewItems = cards.map((card) => ({
+			card,
+			frame: card.querySelector('[data-pdf-frame]'),
+			fallbackLink: card.querySelector('[data-pdf-fallback-link]')
+		}))
+		const frameStates = previewItems.map(() => ({
+			loaded: false,
+			failed: false,
+			listenersAttached: false,
+			timeoutId: undefined
+		}))
+		const preferImageFallback = isIosSafariBrowser()
 		let activeIndex = 0
 		let didInit = false
 
+		const clearFrameTimeout = (index) => {
+			const state = frameStates[index]
+			if (!state || typeof state.timeoutId !== 'number') return
+			window.clearTimeout(state.timeoutId)
+			state.timeoutId = undefined
+		}
+
+		const showFallback = (index) => {
+			const item = previewItems[index]
+			const state = frameStates[index]
+			if (!item || !state || state.failed) return
+
+			state.failed = true
+			clearFrameTimeout(index)
+			item.card.classList.add('has-fallback')
+
+			if (item.frame instanceof HTMLElement) {
+				item.frame.setAttribute('hidden', '')
+				item.frame.setAttribute('aria-hidden', 'true')
+			}
+
+			if (item.fallbackLink instanceof HTMLElement) {
+				item.fallbackLink.removeAttribute('hidden')
+			}
+		}
+
+		const markFrameLoaded = (index) => {
+			const item = previewItems[index]
+			const state = frameStates[index]
+			if (!item || !state || state.failed) return
+
+			state.loaded = true
+			clearFrameTimeout(index)
+
+			if (item.frame instanceof HTMLElement) {
+				item.frame.removeAttribute('hidden')
+				item.frame.removeAttribute('aria-hidden')
+			}
+
+			if (item.fallbackLink instanceof HTMLElement) {
+				item.fallbackLink.setAttribute('hidden', '')
+			}
+		}
+
+		const wireFrameListeners = (index) => {
+			const item = previewItems[index]
+			const state = frameStates[index]
+			if (!item || !state || state.listenersAttached || !(item.frame instanceof HTMLIFrameElement)) return
+
+			state.listenersAttached = true
+			item.frame.addEventListener('load', () => {
+				markFrameLoaded(index)
+			})
+			item.frame.addEventListener('error', () => {
+				showFallback(index)
+			})
+		}
+
+		const startFrameWatchdog = (index) => {
+			const state = frameStates[index]
+			if (!state || state.loaded || state.failed) return
+			clearFrameTimeout(index)
+			state.timeoutId = window.setTimeout(() => {
+				if (!state.loaded) {
+					showFallback(index)
+				}
+			}, FRAME_LOAD_TIMEOUT_MS)
+		}
+
 		const ensureFrameLoaded = (index) => {
-			const frame = frames[index]
-			if (!(frame instanceof HTMLIFrameElement)) return
-			if (frame.getAttribute('src')) return
+			const item = previewItems[index]
+			const state = frameStates[index]
+			if (!item || !state) return
+			if (preferImageFallback) {
+				showFallback(index)
+				return
+			}
+
+			const frame = item.frame
+			if (!(frame instanceof HTMLIFrameElement)) {
+				showFallback(index)
+				return
+			}
+			wireFrameListeners(index)
+
+			const hasSrc = Boolean(frame.getAttribute('src'))
 			const deferredSrc = frame.dataset.src
-			if (!deferredSrc) return
-			frame.setAttribute('src', deferredSrc)
+			if (!hasSrc && deferredSrc) {
+				frame.setAttribute('src', deferredSrc)
+			}
+
+			if (!frame.getAttribute('src')) {
+				showFallback(index)
+				return
+			}
+
+			if (!state.loaded && !state.failed && typeof state.timeoutId !== 'number') {
+				startFrameWatchdog(index)
+			}
 		}
 
 		const setActive = (index, { loadFrame = false } = {}) => {
@@ -170,6 +321,13 @@ const {
 		const initializeSlider = () => {
 			if (didInit) return
 			didInit = true
+
+			if (preferImageFallback) {
+				cards.forEach((_, index) => {
+					showFallback(index)
+				})
+			}
+
 			setActive(0, { loadFrame: true })
 
 			prev?.addEventListener('click', () => goTo(activeIndex - 1))
@@ -333,6 +491,20 @@ const {
 		pointer-events: none;
 		transform: scale(1.012);
 		transform-origin: center center;
+	}
+
+	.simple-lead-pdf-preview__fallback {
+		display: block;
+		height: 100%;
+		width: 100%;
+		background: #fff;
+	}
+
+	.simple-lead-pdf-preview__fallback-image {
+		display: block;
+		height: 100%;
+		width: 100%;
+		object-fit: contain;
 	}
 
 	.simple-lead-pdf-preview__capture {
